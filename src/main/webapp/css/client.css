@@ -1,0 +1,38 @@
+.form {
+    position : relative;
+    top: 5%;
+    width  : 90%;
+    height : 90%;
+    border-radius : 20px;
+    margin : 0 auto;
+    background-color: #c89226;
+    border-top : 1px solid #ff0000;
+    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgba(255, 0, 90, 0.5), 0 0 0 7px #a2ef07, 0 0 0 8px #382825;
+    text-align : start;
+}
+
+.div {
+    position : absolute;
+    top: 5%; right: 77%;
+    width  : 20%;
+    height : auto;
+    border-radius : 20px;
+    margin : 0 auto;
+    background-color: #f4cc70;
+    border-top : 1px solid #a2ef07;
+    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 7px #784a00, 0 0 0 8px #382825;
+    text-align : center;
+}
+
+.Mybutton{
+    position : absolute;
+    top: 92%; left: 92%;
+    width  : auto;
+    height : auto;
+    border-radius : 20px;
+    margin : 0 auto;
+    background-color: #f4cc70;
+    border-top : 1px solid #a2ef07;
+    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 2px #784a00, 0 0 0 8px #382825;
+    text-align : center;
+}
