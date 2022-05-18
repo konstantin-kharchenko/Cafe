@@ -5,7 +5,6 @@ import by.kharchenko.cafe.model.dao.BaseDao;
 import by.kharchenko.cafe.model.dao.ClientDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.entity.Client;
-import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.mapper.impl.ClientMapper;
 import by.kharchenko.cafe.model.mapper.impl.UserMapper;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
@@ -36,20 +35,22 @@ public class ClientDaoImpl implements ClientDao, BaseDao<Client> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement userStatement = connection.prepareStatement(SqlQuery.SELECT_USER_BY_USER_ID)) {
             userStatement.setInt(1, id);
-            ResultSet userResultSet = userStatement.executeQuery();
-            if (userResultSet.next()) {
-                client = new Client();
-                UserMapper.getInstance().rowMap(client, userResultSet);
-                try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.SELECT_CLIENT_BY_USER_ID)) {
-                    clientStatement.setInt(1, id);
-                    ResultSet clientResultSet = clientStatement.executeQuery();
-                    if (clientResultSet.next()) {
-                        ClientMapper.getInstance().rowMap(client, clientResultSet);
+            try (ResultSet userResultSet = userStatement.executeQuery()) {
+                if (userResultSet.next()) {
+                    client = new Client();
+                    UserMapper.getInstance().rowMap(client, userResultSet);
+                    try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.SELECT_CLIENT_BY_USER_ID)) {
+                        clientStatement.setInt(1, id);
+                        try (ResultSet clientResultSet = clientStatement.executeQuery()) {
+                            if (clientResultSet.next()) {
+                                ClientMapper.getInstance().rowMap(client, clientResultSet);
+                            }
+                        }
                     }
+                    return Optional.of(client);
                 }
                 return Optional.of(client);
             }
-            return Optional.of(client);
         } catch (SQLException | DaoException e) {
             throw new DaoException(e);
         }

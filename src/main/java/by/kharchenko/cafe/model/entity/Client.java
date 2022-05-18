@@ -10,6 +10,7 @@ public final class Client extends User {
     private String photo;
     private boolean isBlock;
 
+    // цена в bigDecimal
     public int getIdClient() {
         return idClient;
     }

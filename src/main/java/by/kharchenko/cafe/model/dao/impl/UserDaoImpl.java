@@ -2,7 +2,6 @@ package by.kharchenko.cafe.model.dao.impl;
 
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.dao.BaseDao;
-import by.kharchenko.cafe.model.dao.DefaultValues;
 import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.dao.UserDao;
 import by.kharchenko.cafe.model.entity.User;
@@ -31,11 +30,12 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOGIN_PASS)) {
             statement.setString(1, login);
-            ResultSet resultSet = statement.executeQuery();
-            String passFromDb;
-            if (resultSet.next()) {
-                passFromDb = resultSet.getString(1);
-                return password.equals(passFromDb);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                String passFromDb;
+                if (resultSet.next()) {
+                    passFromDb = resultSet.getString(1);
+                    return password.equals(passFromDb);
+                }
             }
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -48,13 +48,14 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ID_BY_LOGIN)) {
             statement.setString(1, login);
-            ResultSet resultSet = statement.executeQuery();
-            Optional<Integer> id = Optional.empty();
-            if (resultSet.next()) {
-                id = Optional.of(resultSet.getInt(1));
+            try(ResultSet resultSet = statement.executeQuery()) {
+                Optional<Integer> id = Optional.empty();
+                if (resultSet.next()) {
+                    id = Optional.of(resultSet.getInt(1));
+                    return id;
+                }
                 return id;
             }
-            return id;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -66,9 +67,10 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ROLE_BY_LOGIN)) {
             statement.setString(1, login);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                role = User.Role.valueOf(resultSet.getString(1).toUpperCase());
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    role = User.Role.valueOf(resultSet.getString(1).toUpperCase());
+                }
             }
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -81,9 +83,10 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         List<String> logins = new ArrayList<>();
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOGINS)) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                logins.add(resultSet.getString(1));
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    logins.add(resultSet.getString(1));
+                }
             }
         } catch (SQLException e) {
             throw new DaoException(e);

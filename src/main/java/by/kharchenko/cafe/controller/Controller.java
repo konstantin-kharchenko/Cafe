@@ -33,10 +33,14 @@ public class Controller extends HttpServlet {
                 Command command = optionalCommand.get();
                 router = command.execute(request);
                 switch (router.getType()) {
-                    case REDIRECT -> response.sendRedirect(router.getPage());
-                    case FORWARD -> request.getRequestDispatcher(router.getPage()).forward(request, response);
-                    default -> throw new ServletException("forward, redirect exception");
-
+                    case REDIRECT:
+                        response.sendRedirect(router.getPage());
+                        break;
+                    case FORWARD:
+                        request.getRequestDispatcher(router.getPage()).forward(request, response);
+                        break;
+                    default:
+                        throw new ServletException("forward, redirect exception");
                 }
             } else {
                 throw new ServletException("optional exception");

@@ -5,7 +5,6 @@ import by.kharchenko.cafe.model.dao.AdministratorDao;
 import by.kharchenko.cafe.model.dao.BaseDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.entity.Administrator;
-import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.mapper.impl.AdministratorMapper;
 import by.kharchenko.cafe.model.mapper.impl.UserMapper;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
@@ -35,17 +34,18 @@ public class AdministratorDaoImpl implements AdministratorDao, BaseDao<Administr
     public Optional<Administrator> findAdministratorByUserId(int id) throws DaoException {
         Administrator administrator = null;
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_USER_BY_USER_ID); ) {
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+             PreparedStatement userStatement = connection.prepareStatement(SqlQuery.SELECT_USER_BY_USER_ID); ) {
+            userStatement.setInt(1, id);
+            ResultSet resultSet = userStatement.executeQuery();
             if (resultSet.next()) {
                 administrator = new Administrator();
                 UserMapper.getInstance().rowMap(administrator, resultSet);
-                try (PreparedStatement statement1 = connection.prepareStatement(SqlQuery.SELECT_ADMINISTRATOR_BY_USER_ID)) {
-                    statement1.setInt(1, id);
-                    ResultSet resultSet1 = statement1.executeQuery();
-                    if (resultSet1.next()) {
-                        AdministratorMapper.getInstance().rowMap(administrator, resultSet1);
+                try (PreparedStatement AdministratorStatement = connection.prepareStatement(SqlQuery.SELECT_ADMINISTRATOR_BY_USER_ID)) {
+                    AdministratorStatement.setInt(1, id);
+                    try (ResultSet resultSet1 = AdministratorStatement.executeQuery()){
+                        if (resultSet1.next()) {
+                            AdministratorMapper.getInstance().rowMap(administrator, resultSet1);
+                        }
                     }
                 }
                 return Optional.of(administrator);
