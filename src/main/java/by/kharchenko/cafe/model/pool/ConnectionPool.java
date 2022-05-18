@@ -88,6 +88,7 @@ public class ConnectionPool {
                 try {
                     free.put((ProxyConnection) connection);
                 } catch (InterruptedException e) {
+                    //log
                     Thread.currentThread().interrupt();
                 }
             }

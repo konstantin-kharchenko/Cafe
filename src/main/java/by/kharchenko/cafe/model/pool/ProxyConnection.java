@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-// избавиться от public
 class ProxyConnection implements Connection {
     private final Connection connection;
 
