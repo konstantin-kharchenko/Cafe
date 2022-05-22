@@ -1,15 +1,11 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: konha
-  Date: 30.04.2022
-  Time: 12:56
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>${user.getLogin()}</title>
     <link rel="stylesheet" href="css/client.css" type="text/css"/>
+    <script language="JavaScript" type="text/javascript">
+        window.history.forward();
+    </script>
 </head>
 <body bgcolor="#90ee90">
 <form action="controller" class="form">

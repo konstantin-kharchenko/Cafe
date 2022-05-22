@@ -7,6 +7,8 @@ public class PageMessage {
     public static final String INVALIDATE_PASSWORD = "invalidate password";
     public static final String ADMINISTRATOR_STATUS_EXCEPTION = "this user is not activated";
     public static final String LOGIN_EXISTS = "this login already exists";
+    public static final String FAILED_TO_ADD_USER = "failed ti add user";
+    public static final String SUCCESSFUL_REGISTRATION = "registration completed successful";
 
     private PageMessage() {
     }

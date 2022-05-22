@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class LogoutCommand implements Command {
     @Override
-    public Router execute(HttpServletRequest request){
+    public Router execute(HttpServletRequest request) {
         request.getSession().invalidate();
         return new Router(PagePath.LOGIN_PAGE, Router.Type.REDIRECT);
     }

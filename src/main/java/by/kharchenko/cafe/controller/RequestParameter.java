@@ -19,6 +19,11 @@ public class RequestParameter {
     public static final String EXPERIENCE = "experience";
     public static final String ID_ADMINISTRATOR = "id_administrator";
     public static final String STATUS = "status";
+    public static final String LANGUAGE = "language";
+    public static final String ENGLISH_LANGUAGE = "english";
+    public static final String RUSSIAN_LANGUAGE = "russian";
+    public static final String ENGLISH_LANGUAGE_CODE = "en";
+    public static final String RUSSIAN_LANGUAGE_CODE = "ru";
 
     private RequestParameter() {
     }

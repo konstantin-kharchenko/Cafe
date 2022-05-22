@@ -10,7 +10,6 @@ import by.kharchenko.cafe.model.entity.Administrator;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.UserService;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
-import com.oracle.wls.shaded.org.apache.bcel.generic.NEW;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -36,17 +35,24 @@ public class LoginCommand implements Command {
                 request.setAttribute(USER_ATTRIBUTE, user);
                 if (user.getRole() == User.Role.CLIENT) {
                     page = PagePath.CLIENT_PAGE;
+                    session.setAttribute(LOGIN_ATTRIBUTE, login);
+                    session.setAttribute(ROLE_ATTRIBUTE, User.Role.CLIENT.toString());
                 } else if (user.getRole() == User.Role.ADMINISTRATOR) {
                     if (((Administrator) user).getStatus() == Administrator.Status.ACCEPTED) {
                         page = PagePath.ADMINISTRATOR_PAGE;
+                        session.setAttribute(LOGIN_ATTRIBUTE, login);
+                        session.setAttribute(ROLE_ATTRIBUTE, User.Role.ADMINISTRATOR.toString());
                     } else {
-                        request.setAttribute(EXCEPTION_MSG_ATTRIBUTE, PageMessage.ADMINISTRATOR_STATUS_EXCEPTION);
+                        request.setAttribute(MSG_ATTRIBUTE, PageMessage.ADMINISTRATOR_STATUS_EXCEPTION);
                         page = PagePath.LOGIN_PAGE;
                     }
                 }
+                session.setAttribute(ROLE_ATTRIBUTE, user.getRole());
+                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, "true");
             } else {
-                request.setAttribute(EXCEPTION_MSG_ATTRIBUTE, PageMessage.INCORRECT_PASSWORD_OR_LOGIN);
+                request.setAttribute(MSG_ATTRIBUTE, PageMessage.INCORRECT_PASSWORD_OR_LOGIN);
                 page = PagePath.LOGIN_PAGE;
+                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, "false");
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

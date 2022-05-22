@@ -10,6 +10,8 @@ public enum CommandType {
     LOGOUT(new LogoutCommand()),
     REGISTRATION(new RegistrationCommand()),
     REGISTRATION_PAGE(new RegistrationPageCommand()),
+    LANGUAGE_PAGE(new LanguagePageCommand()),
+    LANGUAGE(new LanguageCommand()),
     DEFAULT_COMMAND(new DefaultCommand());
     private final Command command;
 

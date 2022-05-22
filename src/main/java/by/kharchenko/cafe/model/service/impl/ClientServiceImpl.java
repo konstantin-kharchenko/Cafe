@@ -5,18 +5,15 @@ import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.dao.impl.ClientDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.UserDaoImpl;
 import by.kharchenko.cafe.model.entity.Client;
-import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.ClientService;
-import by.kharchenko.cafe.util.encryption.EncryptionPassword;
 import by.kharchenko.cafe.validator.DataValidator;
 import by.kharchenko.cafe.validator.impl.DataValidatorImpl;
+import org.javatuples.Triplet;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class ClientServiceImpl implements ClientService, BaseService<Client> {
 
@@ -59,26 +56,8 @@ public class ClientServiceImpl implements ClientService, BaseService<Client> {
     }
 
     @Override
-    public boolean add(Map<String, String> userData) throws ServiceException {
-        boolean isCorrectData = validator.isCorrectRegisterData(userData);
-        if (isCorrectData) {
-            boolean isUserAdd = false;
-            try {
-                String encryptionPassword = EncryptionPassword.encryption(userData.get(PASSWORD));
-                userData.put(PASSWORD, encryptionPassword);
-                UserDaoImpl userDao = UserDaoImpl.getInstance();
-                isUserAdd = userDao.add(userData);
-                if (isUserAdd) {
-                    ClientDaoImpl administratorDao = ClientDaoImpl.getInstance();
-                    Optional<Integer> userId = userDao.findIdUserByLogin(userData.get(LOGIN));
-                    userId.ifPresent(integer -> userData.put(ID_USER, Integer.toString(integer)));
-                    return  administratorDao.add(userData);
-                }
-            } catch (DaoException e) {
-                throw new ServiceException(e);
-            }
-        }
-        return false;
+    public Triplet<Boolean, Boolean, Boolean> add(Map<String, String> userData) throws ServiceException {
+        return new Triplet<>(false, false, false);
     }
 
     @Override

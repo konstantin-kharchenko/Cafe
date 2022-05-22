@@ -1,5 +1,7 @@
 package by.kharchenko.cafe.util.encryption;
 
+import by.kharchenko.cafe.exception.ServiceException;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -7,18 +9,18 @@ public class EncryptionPassword {
 
     private static final String ENCRYPTION_TYPE = "MD5";
 
-    public static String encryption(String password) {
+    public static String encryption(String password) throws ServiceException {
         MessageDigest md5 = null;
         try {
             md5 = MessageDigest.getInstance(ENCRYPTION_TYPE);
+            byte[] bytes = md5.digest(password.getBytes());
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : bytes) {
+                stringBuilder.append(b);
+            }
+            return stringBuilder.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new ServiceException(e);
         }
-        byte[] bytes = md5.digest(password.getBytes());
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b : bytes) {
-            stringBuilder.append(b);
-        }
-        return stringBuilder.toString();
     }
 }

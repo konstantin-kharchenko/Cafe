@@ -1,0 +1,11 @@
+form {
+    position : relative;
+    width  : 40%;
+    height : auto;
+    border-radius : 20px;
+    margin : 0 auto;
+    background-color: #c89226;
+    border-top : 1px solid #ff0000;
+    box-shadow : 0 0 0 1px #ef0f0f, 0 0 0 6px rgba(255, 0, 90, 0.5), 0 0 0 7px #a2ef07, 0 0 0 8px #ff005a;
+    text-align : center;
+}

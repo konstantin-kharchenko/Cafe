@@ -4,7 +4,8 @@
 <head>
     <title>Registration</title>
     <link rel="stylesheet" href="../css/registration.css" type="text/css"/>
-    <script>
+    <script src="../js/registration.js"></script>
+    <%--<script>
         function showDiv() {
             var div = document.getElementById('payment_type');
             div.style.display = 'block';
@@ -64,12 +65,12 @@
                 var experience = document.getElementById('hiddenExperience').value;
                 var role = document.getElementById('hiddenRoles').value;
                 var payment = document.getElementById('hiddenPayment').value;
+                console.log(password.length);
                 if (login === "") {
                     lable = document.getElementById('labelLogin');
                     lable.innerHTML = 'invalid';
                 }
-                if (password === "") ;
-                {
+                if (password === "") {
                     lable = document.getElementById('labelPassword');
                     lable.innerHTML = 'invalid';
                 }
@@ -112,11 +113,11 @@
                 }
             }
         }
-    </script>
+    </script>--%>
 </head>
 <body bgcolor="#90ee90" onload="load()">
 <c:import url="pages/header/main.jsp"/>
-<form action="../controller" method="post">
+<form action="../registration" method="post">
     <input type="hidden" id="hiddenOldPage" name="hidoldPage" value="${old_page}"/>
     <input type="hidden" id="hiddenRoles" name="hidroles" value="${user.get("role")}"/>
     <input type="hidden" id="hiddenName" name="hidname" value="${user.get("name")}"/>
@@ -163,11 +164,12 @@
         id="labelExperience"></label>
     <input class="input" id="login" required type="text" name="login" value="${user.get("login")}" placeholder="Login"
            minlength="2" maxlength="20"/><label id="labelLogin"></label>
-    <input class="input" required type="password" name="password" placeholder="Password"
+    <input class="input" required type="password" name="password" value="${user.get("password")}" placeholder="Password"
            minlength="4"
            maxlength="12"/><label id="labelPassword"></label>
     <br/><br/><label>${exception_msg}</label><br/><br/>
     <button name="command" id="button" value="registration">Registration</button>
+    <a href="view/login.jsp">BACK</a></br>
     <br/>
 </form>
 </body>

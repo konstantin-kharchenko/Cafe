@@ -8,10 +8,7 @@ import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
@@ -48,7 +45,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ID_BY_LOGIN)) {
             statement.setString(1, login);
-            try(ResultSet resultSet = statement.executeQuery()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
                 Optional<Integer> id = Optional.empty();
                 if (resultSet.next()) {
                     id = Optional.of(resultSet.getInt(1));
@@ -67,7 +64,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ROLE_BY_LOGIN)) {
             statement.setString(1, login);
-            try(ResultSet resultSet = statement.executeQuery()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     role = User.Role.valueOf(resultSet.getString(1).toUpperCase());
                 }
@@ -82,12 +79,12 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
     public List<String> findLogins() throws DaoException {
         List<String> logins = new ArrayList<>();
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOGINS)) {
-            try(ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    logins.add(resultSet.getString(1));
-                }
+             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOGINS);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                logins.add(resultSet.getString(1));
             }
+
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -115,7 +112,8 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         long time = System.currentTimeMillis();
         Timestamp timestamp = new Timestamp(time);
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_USER)) {
+             PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_USER, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
             statement.setString(1, userData.get(NAME));
             statement.setString(2, userData.get(SURNAME));
             statement.setString(3, userData.get(LOGIN));
@@ -126,8 +124,48 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
             statement.setString(8, userData.get(PHONE_NUMBER));
             statement.setString(9, userData.get(ROLE));
             result = statement.executeUpdate();
-            if (result >= 1) {
-                return true;
+            if (result > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int idUser = generatedKeys.getInt(1);
+                        if (Objects.equals(userData.get(ROLE), User.Role.CLIENT.toString().toLowerCase())) {
+                            try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.ADD_CLIENT)) {
+                                clientStatement.setBoolean(1, Boolean.parseBoolean(userData.get(IS_BLOCK)));
+                                clientStatement.setInt(2, Integer.parseInt(userData.get(LOYALTY_POINTS)));
+                                clientStatement.setString(3, "userData.get(PAYMENT_TYPE)");
+                                clientStatement.setInt(4, idUser);
+                                int clientResult = clientStatement.executeUpdate();
+                                if (clientResult >= 1) {
+                                    connection.commit();
+                                    return true;
+                                } else {
+                                    throw new SQLException("failed to add in clients table");
+                                }
+                            }
+                        }
+                        if (Objects.equals(userData.get(ROLE), User.Role.ADMINISTRATOR.toString().toLowerCase())) {
+                            try (PreparedStatement administratorStatement = connection.prepareStatement(SqlQuery.ADD_ADMINISTRATOR)) {
+                                administratorStatement.setDouble(1, Double.parseDouble(userData.get(EXPERIENCE)));
+                                administratorStatement.setString(2, userData.get(STATUS));
+                                administratorStatement.setInt(3, idUser);
+                                int clientResult = administratorStatement.executeUpdate();
+                                if (clientResult >= 1) {
+                                    connection.commit();
+                                    return true;
+                                } else {
+                                    throw new SQLException("failed to add in administrators table");
+                                }
+                            }
+                        }
+                    }
+                } catch (SQLException e) {
+                    connection.rollback();
+                    throw new DaoException(e);
+                } finally {
+                    connection.setAutoCommit(true);
+                }
+            } else {
+                throw new SQLException("failed to add in users table");
             }
         } catch (SQLException e) {
             throw new DaoException(e);

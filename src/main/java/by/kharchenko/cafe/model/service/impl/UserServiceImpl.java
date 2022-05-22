@@ -10,15 +10,22 @@ import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.UserService;
 import by.kharchenko.cafe.util.encryption.EncryptionPassword;
+import by.kharchenko.cafe.validator.DataValidator;
 import by.kharchenko.cafe.validator.impl.DataValidatorImpl;
+import org.javatuples.Triplet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
+import static by.kharchenko.cafe.controller.RequestParameter.LOGIN;
+import static by.kharchenko.cafe.controller.RequestParameter.PASSWORD;
 
 public class UserServiceImpl implements UserService, BaseService<User> {
 
     private static final UserServiceImpl instance = new UserServiceImpl();
+    private final DataValidator validator = DataValidatorImpl.getInstance();
 
     private UserServiceImpl() {
     }
@@ -43,8 +50,30 @@ public class UserServiceImpl implements UserService, BaseService<User> {
     }
 
     @Override
-    public boolean add(Map<String, String> userData) throws ServiceException {
-        return false;
+    public Triplet<Boolean, Boolean, Boolean> add(Map<String, String> userData) throws ServiceException {
+        boolean isCorrectData = validator.isCorrectRegisterData(userData);
+        boolean isLoginExists;
+        boolean isAdd = false;
+        try {
+            if (isCorrectData) {
+                isLoginExists = UserDaoImpl.getInstance().findIdUserByLogin(userData.get(LOGIN)).isPresent();
+                if (!isLoginExists) {
+                    String encryptionPassword = EncryptionPassword.encryption(userData.get(PASSWORD));
+                    userData.put(PASSWORD, encryptionPassword);
+                    UserDaoImpl userDao = UserDaoImpl.getInstance();
+                    isAdd = userDao.add(userData);
+                }
+            } else {
+                if (!Objects.equals(userData.get(LOGIN), "")) {
+                    isLoginExists = UserDaoImpl.getInstance().findIdUserByLogin(userData.get(LOGIN)).isPresent();
+                } else {
+                    isLoginExists = false;
+                }
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return new Triplet<>(isCorrectData, isLoginExists, isAdd);
     }
 
     @Override
@@ -79,10 +108,10 @@ public class UserServiceImpl implements UserService, BaseService<User> {
                 throw new ServiceException(e);
             }
         } else {
-            if (!isLogin){
+            if (!isLogin) {
                 login = "";
             }
-            if (!isPassword){
+            if (!isPassword) {
                 password = "";
             }
             return userOptional;
