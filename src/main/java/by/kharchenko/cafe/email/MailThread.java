@@ -1,15 +1,20 @@
 package by.kharchenko.cafe.email;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
 import java.util.Properties;
 
 public class MailThread extends Thread {
+
+    private static final Logger logger = LogManager.getLogger(MailThread.class);
     private MimeMessage message;
     private String sendToEmail;
     private String mailSubject;
