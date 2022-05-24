@@ -8,16 +8,18 @@
 <head>
     <title><fmt:message key="login.sign_in" bundle="${lang}"/></title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../css/login.css" type="text/css"/>
+    <link rel="stylesheet" href="${abs}/view/css/login.css" type="text/css"/>
     <script type="text/javascript">
         window.history.forward();
     </script>
+
 </head>
 <body bgcolor="#90ee90">
 
-<c:import url="pages/header/main.jsp"/>
-<form  method="post" action="${abs}/language">
-    <button class="button2" name="command" value="language_page"><fmt:message key="login.language" bundle="${lang}"/></button>
+<c:import url="${abs}/view/pages/header/main.jsp"/>
+<form method="post" action="${abs}/language">
+    <button class="button2" name="command" value="language_page"><fmt:message key="login.language"
+                                                                              bundle="${lang}"/></button>
 </form>
 <div class="form">
     <form method="post" action="${abs}/controller" onload="load()">
@@ -39,8 +41,8 @@
                        maxlength="20">
             </label><label id="labelPassword"></label>
         </p>
-        <button class="button" name="command" value="login"><fmt:message key="login.button.sign_in"
-                                                                         bundle="${lang}"/></button>
+        <button class="button" name="command" onclick="noBack()" value="login"><fmt:message key="login.button.sign_in"
+                             bundle="${lang}"/></button>
         <br/><br/><label>${exception_msg}</label><br/><br/>
     </form>
     <form method="post" action="${abs}/registration">

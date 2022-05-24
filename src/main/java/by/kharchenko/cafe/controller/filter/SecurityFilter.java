@@ -8,12 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static by.kharchenko.cafe.controller.RequestAttribute.IS_AUTHENTICATE_ATTRIBUTE;
+
 @WebFilter(filterName = "SecurityFilter",
-        urlPatterns = {"/view/pages/*"},
+        urlPatterns = {"/view/pages/users/*"},
         initParams = {@WebInitParam(name = "LOGIN_PATH",
                 value = PagePath.LOGIN_PAGE)})
 public class SecurityFilter implements Filter {
-
     private String loginPath;
 
     public void init(FilterConfig config) throws ServletException {
@@ -27,8 +28,11 @@ public class SecurityFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String contextPath = httpServletRequest.getContextPath();
-        httpServletResponse.sendRedirect(contextPath + loginPath);
+        Boolean isAuthenticate = (Boolean) httpServletRequest.getSession().getValue(IS_AUTHENTICATE_ATTRIBUTE);
+        if (isAuthenticate == null || !isAuthenticate) {
+            String contextPath = httpServletRequest.getContextPath();
+            httpServletResponse.sendRedirect(contextPath + loginPath);
+        }
         chain.doFilter(request, response);
     }
 }

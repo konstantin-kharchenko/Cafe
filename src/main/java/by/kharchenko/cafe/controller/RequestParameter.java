@@ -1,6 +1,6 @@
 package by.kharchenko.cafe.controller;
 
-public class RequestParameter {
+public final class RequestParameter {
     public static final String ID_USER = "id_user";
     public static final String NAME = "name";
     public static final String SURNAME = "surname";

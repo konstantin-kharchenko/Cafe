@@ -1,6 +1,6 @@
 package by.kharchenko.cafe.controller;
 
-public class RequestAttribute {
+public final class RequestAttribute {
     public static final String LOGIN_ATTRIBUTE = "login";
     public static final String PASSWORD_ATTRIBUTE = "password";
     public static final String ROLE_ATTRIBUTE = "role";

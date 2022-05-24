@@ -36,23 +36,21 @@ public class LoginCommand implements Command {
                 if (user.getRole() == User.Role.CLIENT) {
                     page = PagePath.CLIENT_PAGE;
                     session.setAttribute(LOGIN_ATTRIBUTE, login);
-                    session.setAttribute(ROLE_ATTRIBUTE, User.Role.CLIENT.toString());
                 } else if (user.getRole() == User.Role.ADMINISTRATOR) {
                     if (((Administrator) user).getStatus() == Administrator.Status.ACCEPTED) {
                         page = PagePath.ADMINISTRATOR_PAGE;
                         session.setAttribute(LOGIN_ATTRIBUTE, login);
-                        session.setAttribute(ROLE_ATTRIBUTE, User.Role.ADMINISTRATOR.toString());
                     } else {
                         request.setAttribute(MSG_ATTRIBUTE, PageMessage.ADMINISTRATOR_STATUS_EXCEPTION);
                         page = PagePath.LOGIN_PAGE;
                     }
                 }
                 session.setAttribute(ROLE_ATTRIBUTE, user.getRole());
-                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, "true");
+                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, true);
             } else {
                 request.setAttribute(MSG_ATTRIBUTE, PageMessage.INCORRECT_PASSWORD_OR_LOGIN);
                 page = PagePath.LOGIN_PAGE;
-                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, "false");
+                session.setAttribute(IS_AUTHENTICATE_ATTRIBUTE, false);
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

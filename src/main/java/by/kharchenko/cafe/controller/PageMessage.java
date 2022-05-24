@@ -1,6 +1,6 @@
 package by.kharchenko.cafe.controller;
 
-public class PageMessage {
+public final class PageMessage {
     public static final String DEFAULT_MESSAGE = "illegal command";
     public static final String INCORRECT_PASSWORD_OR_LOGIN = "incorrect password or login";
     public static final String INVALIDATE_LOGIN = "invalidate login";

@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import static by.kharchenko.cafe.controller.RequestAttribute.NEW_PAGE;
 import static by.kharchenko.cafe.controller.RequestAttribute.OLD_PAGE;
 
-public class RegistrationPageCommand implements Command {
+public class GoRegistrationPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
         String page = PagePath.REGISTRATION_PAGE;

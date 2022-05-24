@@ -9,8 +9,9 @@ public enum CommandType {
     LOGIN(new LoginCommand()),
     LOGOUT(new LogoutCommand()),
     REGISTRATION(new RegistrationCommand()),
-    REGISTRATION_PAGE(new RegistrationPageCommand()),
-    LANGUAGE_PAGE(new LanguagePageCommand()),
+    REGISTRATION_PAGE(new GoRegistrationPageCommand()),
+    LANGUAGE_PAGE(new GoLanguagePageCommand()),
+    BACK_PAGE(new GoBackLanguagePageCommand()),
     LANGUAGE(new LanguageCommand()),
     DEFAULT_COMMAND(new DefaultCommand());
     private final Command command;
