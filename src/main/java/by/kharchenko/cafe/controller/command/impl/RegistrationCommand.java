@@ -8,6 +8,7 @@ import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.dao.DefaultValues;
 import by.kharchenko.cafe.model.entity.Administrator;
 import by.kharchenko.cafe.model.entity.User;
+import by.kharchenko.cafe.model.service.impl.EmailServiceImpl;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -49,7 +50,8 @@ public class RegistrationCommand implements Command {
             Triplet<Boolean, Boolean, Boolean> triplet = UserServiceImpl.getInstance().add(userData);
             if (triplet.getValue0() && !triplet.getValue1() && triplet.getValue2()) {
                 router = new Router(PagePath.LOGIN_PAGE, Router.Type.REDIRECT);
-                session.setAttribute(MSG_ATTRIBUTE, SUCCESSFUL_REGISTRATION);
+                request.setAttribute(MSG_ATTRIBUTE, SUCCESSFUL_REGISTRATION);
+                EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL));
             }
             if (!triplet.getValue0() && triplet.getValue1()) {
                 request.setAttribute(MSG_ATTRIBUTE, LOGIN_EXISTS);

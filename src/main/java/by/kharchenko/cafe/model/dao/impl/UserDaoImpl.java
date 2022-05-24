@@ -132,7 +132,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                             try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.ADD_CLIENT)) {
                                 clientStatement.setBoolean(1, Boolean.parseBoolean(userData.get(IS_BLOCK)));
                                 clientStatement.setInt(2, Integer.parseInt(userData.get(LOYALTY_POINTS)));
-                                clientStatement.setString(3, "userData.get(PAYMENT_TYPE)");
+                                clientStatement.setString(3, userData.get(PAYMENT_TYPE));
                                 clientStatement.setInt(4, idUser);
                                 int clientResult = clientStatement.executeUpdate();
                                 if (clientResult >= 1) {
