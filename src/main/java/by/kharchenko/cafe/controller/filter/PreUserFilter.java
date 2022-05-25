@@ -2,7 +2,10 @@ package by.kharchenko.cafe.controller.filter;
 
 import by.kharchenko.cafe.exception.FilterException;
 import by.kharchenko.cafe.exception.ServiceException;
+import by.kharchenko.cafe.model.entity.Client;
+import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.User;
+import by.kharchenko.cafe.model.service.impl.OrderServiceImpl;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
@@ -13,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static by.kharchenko.cafe.controller.PagePath.*;
@@ -44,6 +48,8 @@ public class PreUserFilter implements Filter {
                         request.setAttribute(USER_ATTRIBUTE, user1);
                         if (user1.getRole() == User.Role.CLIENT) {
                             session.setAttribute(NEW_PAGE, CLIENT_PAGE);
+                            List<Order> orders = OrderServiceImpl.getInstance().findOrdersByIdClient(((Client)user1).getIdClient());
+                            request.setAttribute(ORDERS_ATTRIBUTE, orders);
                         } else if (user1.getRole() == User.Role.ADMINISTRATOR) {
                             session.setAttribute(NEW_PAGE, ADMINISTRATOR_PAGE);
                         }

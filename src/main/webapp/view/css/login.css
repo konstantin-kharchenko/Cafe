@@ -32,9 +32,9 @@ h4 {
     background-color: #fac536;
 }
 .button2 {
-    position : relative;
-    top: 600px;
-    left: 85%;
+    position: relative;
+    top: 50%;
+    left: 90%;
     height     : 30px;
     margin     : 0 auto 17px;
     width      : 120px;

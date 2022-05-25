@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="abs">${pageContext.request.contextPath}</c:set>
 <html>
 <fmt:setLocale value="${language}"/>
@@ -21,6 +22,16 @@
             <h4>Phone number: ${user.getPhoneNumber()}</h4>
             <h4>Loyalty points: ${user.getLoyaltyPoints()}</h4>
             <br/>
+        </div>
+        <div class="div3">
+            <c:forEach var="order" items="${orders}">
+                <div class="div2">
+                    <a href="${abs}/controller?command=order&order_id=${order.getIdOrder()}&order_date=${order.getDate()}
+                    &order_id_client=${order.getIdClient()}&order_sum=${order.getSum()}
+                    &order_name=${order.getName()}"><c:out value="${order.getName()}"/></a><br/>
+                    <c:out value="${order.getDate()}"/>
+                </div>
+            </c:forEach>
         </div>
         <button class="button" name="command" value="logout">LogOut</button>
     </form>

@@ -11,12 +11,12 @@ import java.util.Objects;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.OLD_PAGE;
 
-public class GoBackLanguagePageCommand implements Command {
+public class GoBackPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
         String oldPage = (String) session.getValue(OLD_PAGE);
-        session.setAttribute(OLD_PAGE, PagePath.LANGUAGE_PAGE);
+        session.setAttribute(OLD_PAGE, request.getAttribute(OLD_PAGE));
         if (Objects.equals(oldPage, PagePath.LOGIN_PAGE)) {
             return new Router(oldPage, Router.Type.REDIRECT);
         } else {

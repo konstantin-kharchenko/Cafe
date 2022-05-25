@@ -13,6 +13,7 @@ import java.util.*;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class UserDaoImpl implements UserDao, BaseDao<User> {
+
     private static final UserDaoImpl instance = new UserDaoImpl();
 
     private UserDaoImpl() {

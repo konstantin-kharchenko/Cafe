@@ -26,6 +26,8 @@ public final class RequestParameter {
     public static final String RUSSIAN_LANGUAGE_CODE = "ru";
     public static final String ID_MENU = "id_menu";
     public static final String DATE = "date";
+    public static final String ID_ORDER = "id_order";
+    public static final String SUM = "sum";
 
     private RequestParameter() {
     }

@@ -7,12 +7,16 @@ import by.kharchenko.cafe.controller.command.Router;
 import by.kharchenko.cafe.exception.CommandException;
 import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.entity.Administrator;
+import by.kharchenko.cafe.model.entity.Client;
+import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.UserService;
+import by.kharchenko.cafe.model.service.impl.OrderServiceImpl;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
 import java.util.Optional;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
@@ -34,6 +38,8 @@ public class LoginCommand implements Command {
                 User user = optionalUser.get();
                 request.setAttribute(USER_ATTRIBUTE, user);
                 if (user.getRole() == User.Role.CLIENT) {
+                    List<Order> orders = OrderServiceImpl.getInstance().findOrdersByIdClient(((Client)user).getIdClient());
+                    request.setAttribute(ORDERS_ATTRIBUTE, orders);
                     page = PagePath.CLIENT_PAGE;
                     session.setAttribute(LOGIN_ATTRIBUTE, login);
                 } else if (user.getRole() == User.Role.ADMINISTRATOR) {

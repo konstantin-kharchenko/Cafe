@@ -9,6 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductDaoImpl implements ProductDao, BaseDao<Product> {
+    private static final ProductDaoImpl instance = new ProductDaoImpl();
+
+    private ProductDaoImpl() {
+    }
+
+    public static ProductDaoImpl getInstance() {
+        return instance;
+    }
     @Override
     public boolean insert(Product product) throws DaoException {
         return false;

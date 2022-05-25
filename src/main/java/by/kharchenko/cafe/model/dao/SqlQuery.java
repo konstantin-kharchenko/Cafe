@@ -11,8 +11,10 @@ public final class SqlQuery {
     public static final String ID_BY_LOGIN = "SELECT id_user FROM users WHERE login = ?";
     public static final String ROLE_BY_LOGIN = "SELECT role FROM users WHERE login = ?";
     public static final String SELECT_LOGINS = "SELECT login FROM users";
-    public static final String SELECT_ALL_MENU = "SELECT is_menu name date photo FROM MENU";
-
+    public static final String SELECT_ALL_MENU = "SELECT id_menu, name, date, photo FROM menu";
+    public static final String SELECT_ORDERS_BY_CLIENT_ID = "SELECT id_order, name, date, sum FROM orders WHERE id_client = ?";
+    public static final String SELECT_MENU_ID_BY_ORDER_ID = "SELECT id_menu FROM orders_menu WHERE id_order = ?";
+    public static final String SELECT_MENU_LIST_BY_ID_LIST = "SELECT id_menu, name, date, photo FROM menu WHERE id_menu IN (";
     private SqlQuery() {
     }
 }

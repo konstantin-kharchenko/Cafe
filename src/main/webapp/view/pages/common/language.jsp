@@ -20,7 +20,7 @@
     Russian <input type="radio" checked name="language" value="russian"></br>
     English <input type="radio" name="language" value="english"></br></br>
     <button name="command" value="language">SAVE</button></br></br>
-    <button name="command" value="back_page">BACK</button></br></br>
+    <a href="${abs}/controller?command=back_page&old_page=view/pages/common/language.jsp">BACK</a>
     </br></br>
 </form>
 

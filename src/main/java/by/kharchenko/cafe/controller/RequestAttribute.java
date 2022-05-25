@@ -9,6 +9,16 @@ public final class RequestAttribute {
     public static final String OLD_PAGE = "old_page";
     public static final String NEW_PAGE = "new_page";
     public static final String IS_AUTHENTICATE_ATTRIBUTE = "is_authenticate";
+    public static final String ORDERS_ATTRIBUTE = "orders";
+
+    public static final String ORDER_NAME_ATTRIBUTE = "order_name";
+    public static final String ORDER_ID_ATTRIBUTE = "order_id";
+    public static final String ORDER_DATE_ATTRIBUTE = "order_date";
+    public static final String ORDER_ID_CLIENT_ATTRIBUTE = "order_id_client";
+    public static final String ORDER_SUM_ATTRIBUTE = "order_sum";
+
+    public static final String MENU_ATTRIBUTE = "menu_list";
+
     private RequestAttribute() {
     }
 }

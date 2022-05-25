@@ -13,7 +13,7 @@
 
 .div {
     position : absolute;
-    top: 5%; right: 77%;
+    top: 5%; right: 50%;
     width  : 20%;
     height : auto;
     border-radius : 20px;
@@ -21,6 +21,28 @@
     background-color: #f4cc70;
     border-top : 1px solid #a2ef07;
     box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 7px #784a00, 0 0 0 8px #382825;
+    text-align : center;
+}
+.div3 {
+    position : absolute;
+    top: 5%; right: 77%;
+    width  : 20%;
+    height : auto;
+    border-radius : 3px;
+    margin : 0 auto;
+    background-color: #f4cc70;
+    border-top : 1px solid #a2ef07;
+    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 7px #784a00, 0 0 0 8px #382825;
+    text-align : center;
+}
+.div2 {
+    right: 20%;
+    height : 40px;
+    border-radius : 3px;
+    margin : 0 auto;
+    background-color: #f4cc70;
+    border-top : 1px solid #a2ef07;
+    box-shadow : 0 0 0 1px #382825, 0 0 0 1px rgb(220, 9, 86), 0 0 0 1px #784a00, 0 0 0 1px #382825;
     text-align : center;
 }
 
@@ -38,8 +60,8 @@
 }
 .button3 {
     position : relative;
-    top: 600px;
-    left: 85%;
+    top: 50%;
+    left: 90%;
     height     : 30px;
     margin     : 0 auto 17px;
     width      : 120px;
