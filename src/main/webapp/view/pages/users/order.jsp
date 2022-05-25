@@ -13,7 +13,6 @@
             <c:out value="${menu.getDate()}"/>
         </div>
     </c:forEach>
-    <center><h1>Максик лох</h1></center>
     <a href="${abs}/controller?command=back_page&old_page=view/pages/users/order.jsp">BACK</a>
 </div>
 </body>
