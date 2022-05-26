@@ -7,13 +7,13 @@
 </head>
 <body bgcolor="#90ee90">
 <div>
-    <c:forEach var="menu" items="${menu_list}">
-        <div>
-            <c:out value="${menu.getName()}"/><br/>
-            <c:out value="${menu.getDate()}"/>
-        </div>
-    </c:forEach>
-    <a href="${abs}/controller?command=back_page&old_page=view/pages/users/order.jsp">BACK</a>
+        <c:forEach var="menu" items="${menu_list}">
+            <div>
+                <c:out value="${menu.getName()}"/><br/>
+                <c:out value="${menu.getDate()}"/>
+            </div>
+        </c:forEach>
+        <a href="${abs}/controller?command=back_page&old_page=view/pages/users/order.jsp">BACK</a>
 </div>
 </body>
 </html>

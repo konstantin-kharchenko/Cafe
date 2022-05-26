@@ -11,6 +11,7 @@ public enum CommandType {
     REGISTRATION(new RegistrationCommand()),
     REGISTRATION_PAGE(new GoRegistrationPageCommand()),
     LANGUAGE_PAGE(new GoLanguagePageCommand()),
+    MIDDLE_PAGE(new GoMiddlePageCommand()),
     BACK_PAGE(new GoBackPageCommand()),
     LANGUAGE(new LanguageCommand()),
     ORDER(new OrderCommand()),

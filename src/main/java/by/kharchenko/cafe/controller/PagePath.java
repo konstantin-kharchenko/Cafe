@@ -8,6 +8,7 @@ public final class PagePath {
     public static final String ADMINISTRATOR_PAGE = "view/pages/users/administrator.jsp";
     public static final String REGISTRATION_PAGE = "view/pages/common/registration.jsp";
     public static final String ORDER_PAGE = "view/pages/users/order.jsp";
+    public static final String MIDDLE_PAGE = "view/pages/common/middle.jsp";
 
     private PagePath() {
     }

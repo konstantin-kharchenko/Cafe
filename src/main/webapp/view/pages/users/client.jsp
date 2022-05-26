@@ -9,12 +9,12 @@
     <title>${user.getLogin()}</title>
     <link rel="stylesheet" href="${abs}/view/css/client.css" type="text/css"/>
     <script type="text/javascript">
-        window.history.forward();
     </script>
 </head>
 <body bgcolor="#90ee90">
+<input type="hidden" name="old_page" id="old_page" value="${old_page}">
 <div class="form">
-    <form action="${abs}/controller">
+    <form method="post" action="${abs}/controller">
         <div class="div">
             <h3>Hello ${user.getName()} ${user.getSurname()}</h3>
             <h4>Login: ${user.getLogin()}</h4>
@@ -33,9 +33,9 @@
                 </div>
             </c:forEach>
         </div>
-        <button class="button" name="command" value="logout">LogOut</button>
+        <button class="button" name="command" value="middle_page">LogOut</button>
     </form>
-    <form action="${abs}/language">
+    <form method="post" action="${abs}/language">
         <button class="button3" name="command" value="language_page"><fmt:message key="login.language"
                                                                                   bundle="${lang}"/></button>
     </form>

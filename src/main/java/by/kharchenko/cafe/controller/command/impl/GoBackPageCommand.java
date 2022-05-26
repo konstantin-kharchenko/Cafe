@@ -20,7 +20,7 @@ public class GoBackPageCommand implements Command {
         if (Objects.equals(oldPage, PagePath.LOGIN_PAGE)) {
             return new Router(oldPage, Router.Type.REDIRECT);
         } else {
-            return new Router(oldPage, Router.Type.FORWARD);
+            return new Router(oldPage, Router.Type.REDIRECT);
         }
     }
 }
