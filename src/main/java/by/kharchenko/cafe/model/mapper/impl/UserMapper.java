@@ -4,14 +4,18 @@ import by.kharchenko.cafe.controller.RequestParameter;
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.mapper.CustomRowMapper;
+import by.kharchenko.cafe.util.encryption.CustomPictureEncoder;
 import org.apache.logging.log4j.Level;
 
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Optional;
+
+import static by.kharchenko.cafe.controller.RequestParameter.PHOTO;
 
 public class UserMapper implements CustomRowMapper<User> {
 
@@ -35,11 +39,12 @@ public class UserMapper implements CustomRowMapper<User> {
             user.setLogin(resultSet.getString(RequestParameter.LOGIN));
             user.setPassword(resultSet.getString(RequestParameter.PASSWORD));
             user.setEmail(resultSet.getString(RequestParameter.EMAIL));
-            user.setAge(resultSet.getInt(RequestParameter.AGE));
+            user.setBirthday(resultSet.getDate(RequestParameter.BIRTHDAY).toLocalDate());
             user.setRegistrationTime(format.parse(resultSet.getString(RequestParameter.REGISTRATION_TIME)));
             user.setPhoneNumber(resultSet.getString(RequestParameter.PHONE_NUMBER));
             user.setRole(User.Role.valueOf(resultSet.getString(RequestParameter.ROLE).toUpperCase()));
-            logger.log(Level.INFO,"user added");
+            user.setPhotoPath(resultSet.getString(PHOTO));
+            logger.log(Level.INFO, "user added");
         } catch (SQLException | ParseException e) {
             throw new DaoException(e);
         }

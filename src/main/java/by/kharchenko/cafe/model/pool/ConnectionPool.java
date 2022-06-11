@@ -16,9 +16,8 @@ public class ConnectionPool {
     private static final int CAPACITY = 10;
     private static final AtomicBoolean isCreate = new AtomicBoolean(false);
     private static final String URL = "url";
-    private static final String ERROR_MESSAGE = "receive error connection";
     private static final Properties properties;
-    private static final String PROPERTIES_PATH = "properties/connection.properties";
+    private static final String PROPERTIES_PATH = "connection.configuration/connection.properties";
     private static ConnectionPool instance;
     private final BlockingQueue<ProxyConnection> free = new LinkedBlockingDeque<>(CAPACITY);
     private final BlockingQueue<ProxyConnection> used = new LinkedBlockingDeque<>(CAPACITY);

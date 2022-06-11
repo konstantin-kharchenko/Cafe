@@ -1,26 +1,22 @@
 package by.kharchenko.cafe.controller.command.impl;
 
+import by.kharchenko.cafe.controller.PagePath;
 import by.kharchenko.cafe.controller.command.Command;
 import by.kharchenko.cafe.controller.command.Router;
 import by.kharchenko.cafe.exception.CommandException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.util.Objects;
+import static by.kharchenko.cafe.controller.RequestAttribute.MAIN_PAGE_FOR_LANGUAGE_ATTRIBUTE;
 
-import static by.kharchenko.cafe.controller.PagePath.LANGUAGE_PAGE;
-import static by.kharchenko.cafe.controller.RequestAttribute.NEW_PAGE;
-import static by.kharchenko.cafe.controller.RequestAttribute.OLD_PAGE;
 
 public class GoLanguagePageCommand implements Command {
     @Override
-    public Router execute(HttpServletRequest request) throws CommandException {
+    public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         HttpSession session = request.getSession();
-        String newPage = (String) session.getValue(NEW_PAGE);
-        if (!Objects.equals(newPage, LANGUAGE_PAGE)) {
-            session.setAttribute(OLD_PAGE, newPage);
-        }
-        session.setAttribute(NEW_PAGE, LANGUAGE_PAGE);
-        return new Router(LANGUAGE_PAGE, Router.Type.FORWARD);
+        String mainPage = request.getParameter(MAIN_PAGE_FOR_LANGUAGE_ATTRIBUTE);
+        session.setAttribute(MAIN_PAGE_FOR_LANGUAGE_ATTRIBUTE, mainPage);
+        return new Router(PagePath.LANGUAGE_PAGE);
     }
 }

@@ -2,9 +2,7 @@ package by.kharchenko.cafe.model.entity;
 
 import java.util.Objects;
 
-public final class Administrator extends User {
-
-
+public class Administrator extends User{
     private int idAdministrator;
     private double experience;
     private Status status;
@@ -67,7 +65,7 @@ public final class Administrator extends User {
                 ", surname='" + surname + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
-                ", age=" + age +
+                ", birthday=" + birthday +
                 ", registrationTime=" + registrationTime +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
@@ -112,6 +110,11 @@ public final class Administrator extends User {
 
         public AdministratorBuilder withInformation(String information) {
             this.user.information = information;
+            return this;
+        }
+
+        public AdministratorBuilder withAdAdministrator(int idAdministrator) {
+            this.user.idAdministrator = idAdministrator;
             return this;
         }
     }

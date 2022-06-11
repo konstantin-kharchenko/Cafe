@@ -5,77 +5,52 @@ import by.kharchenko.cafe.controller.command.Command;
 import by.kharchenko.cafe.controller.command.Router;
 import by.kharchenko.cafe.exception.CommandException;
 import by.kharchenko.cafe.exception.ServiceException;
-import by.kharchenko.cafe.model.dao.DefaultValues;
-import by.kharchenko.cafe.model.entity.Administrator;
-import by.kharchenko.cafe.model.entity.User;
-import by.kharchenko.cafe.model.service.impl.EmailServiceImpl;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.javatuples.Triplet;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-import static by.kharchenko.cafe.controller.PageMessage.*;
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
+import static by.kharchenko.cafe.controller.RequestAttribute.BIRTHDAY_ATTRIBUTE;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
+import static by.kharchenko.cafe.controller.RequestParameter.ROLE;
 
 public class RegistrationCommand implements Command {
     @Override
-    public Router execute(HttpServletRequest request) throws CommandException {
+    public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = null;
         Map<String, String> userData = new HashMap<>();
         String role = request.getParameter(ROLE_ATTRIBUTE);
-        userData.put(LOGIN, request.getParameter(LOGIN));
-        userData.put(PASSWORD, request.getParameter(PASSWORD));
-        userData.put(EMAIL, request.getParameter(EMAIL));
-        userData.put(PHONE_NUMBER, request.getParameter(PHONE_NUMBER));
-        userData.put(NAME, request.getParameter(NAME));
-        userData.put(SURNAME, request.getParameter(SURNAME));
-        userData.put(AGE, request.getParameter(AGE));
+        userData.put(LOGIN, request.getParameter(LOGIN_ATTRIBUTE));
+        userData.put(PASSWORD, request.getParameter(PASSWORD_ATTRIBUTE));
+        userData.put(EMAIL, request.getParameter(EMAIL_ATTRIBUTE));
+        userData.put(PHONE_NUMBER, request.getParameter(PHONE_NUMBER_ATTRIBUTE));
+        userData.put(NAME, request.getParameter(NAME_ATTRIBUTE));
+        userData.put(SURNAME, request.getParameter(SURNAME_ATTRIBUTE));
+        userData.put(BIRTHDAY, request.getParameter(BIRTHDAY_ATTRIBUTE));
         userData.put(ROLE, role);
         HttpSession session = request.getSession();
-        session.setAttribute(OLD_PAGE, PagePath.REGISTRATION_PAGE);
         try {
-            if (Objects.equals(role.toUpperCase(), User.Role.ADMINISTRATOR.toString())) {
-                userData.put(EXPERIENCE, request.getParameter(EXPERIENCE));
-                userData.put(STATUS, Administrator.Status.WAITING.getStatus());
-            } else if (Objects.equals(role.toUpperCase(), User.Role.CLIENT.toString())) {
-                userData.put(PAYMENT_TYPE, request.getParameter(PAYMENT_TYPE));
-                userData.put(IS_BLOCK, Boolean.toString(DefaultValues.DEFAULT_BOOLEAN_IS_BLOCK));
-                userData.put(LOYALTY_POINTS, Integer.toString(DefaultValues.DEFAULT_LOYALTY_POINTS));
-            }
-            Triplet<Boolean, Boolean, Boolean> triplet = UserServiceImpl.getInstance().add(userData);
-            if (triplet.getValue0() && !triplet.getValue1() && triplet.getValue2()) {
-                router = new Router(PagePath.LOGIN_PAGE, Router.Type.REDIRECT);
-                request.setAttribute(MSG_ATTRIBUTE, SUCCESSFUL_REGISTRATION);
-                EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL));
-            }
-            if (!triplet.getValue0() && triplet.getValue1()) {
-                request.setAttribute(MSG_ATTRIBUTE, LOGIN_EXISTS);
+            boolean match = UserServiceImpl.getInstance().add(userData);
+            if (match) {
+                session.setAttribute(MSG_ATTRIBUTE, "success registration");
+                request.setAttribute(REPEAT_ATTRIBUTE, false);
+                router = new Router(PagePath.HOME_PAGE, Router.Type.REDIRECT);
+            } else {
+                if (userData.get(LOGIN).equals(LOGIN_EXISTS)) {
+                    request.setAttribute(MSG_ATTRIBUTE, "login exists");
+                    userData.put(LOGIN, "");
+                }
                 request.setAttribute(USER_ATTRIBUTE, userData);
-                router = new Router(PagePath.REGISTRATION_PAGE, Router.Type.FORWARD);
-            }
-            if (!triplet.getValue0() && !triplet.getValue1()) {
-                request.setAttribute(USER_ATTRIBUTE, userData);
-                router = new Router(PagePath.REGISTRATION_PAGE, Router.Type.FORWARD);
-            }
-            if (triplet.getValue0() && triplet.getValue1()) {
-                request.setAttribute(MSG_ATTRIBUTE, LOGIN_EXISTS);
-                request.setAttribute(USER_ATTRIBUTE, userData);
-                router = new Router(PagePath.REGISTRATION_PAGE, Router.Type.FORWARD);
-            }
-            if (triplet.getValue0() && !triplet.getValue1() && !triplet.getValue2()) {
-                request.setAttribute(MSG_ATTRIBUTE, FAILED_TO_ADD_USER);
-                request.setAttribute(USER_ATTRIBUTE, userData);
-                router = new Router(PagePath.REGISTRATION_PAGE, Router.Type.FORWARD);
+                request.setAttribute(REPEAT_ATTRIBUTE, true);
+                router = new Router(PagePath.REGISTRATION_PAGE);
             }
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        session.setAttribute(NEW_PAGE, router.getPage());
         return router;
     }
 }

@@ -1,14 +1,12 @@
 package by.kharchenko.cafe.model.dao;
 
 import by.kharchenko.cafe.exception.DaoException;
-import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.entity.AbstractEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface BaseDao<T extends AbstractEntity> {
-    boolean insert(T t) throws DaoException;
 
     boolean delete(T t) throws DaoException;
 
@@ -18,6 +16,6 @@ public interface BaseDao<T extends AbstractEntity> {
 
     List<T> findAll() throws DaoException;
 
-    T update(T t) throws DaoException;
+    boolean update(Map<String, String> t) throws DaoException;
 
 }

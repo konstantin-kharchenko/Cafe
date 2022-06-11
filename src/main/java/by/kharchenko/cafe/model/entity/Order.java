@@ -1,21 +1,60 @@
 package by.kharchenko.cafe.model.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
-public class Order extends AbstractEntity{
+public class Order extends AbstractEntity {
     private int idOrder;
     private String name;
-    private Date date;
+    private LocalDate date;
     private int idClient;
-    private double sum;
+    private BigDecimal price;
+    private PaymentType paymentType;
+    private List<Product> products = new ArrayList<>();
 
-    public Order(int idOrder, String name, Date date, int idClient, double sum) {
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+
+    public enum PaymentType {
+        CLIENT_ACCOUNT("client_account"),
+        CASH("cash");
+
+        private final String payment;
+
+        PaymentType(String status) {
+            this.payment = status;
+        }
+
+        public String getStatus() {
+            return payment;
+        }
+    }
+
+    public Order(int idOrder, String name, LocalDate date, int idClient, BigDecimal price) {
         this.idOrder = idOrder;
         this.name = name;
         this.date = date;
         this.idClient = idClient;
-        this.sum = sum;
+        this.price = price;
     }
 
     public Order() {
@@ -41,11 +80,11 @@ public class Order extends AbstractEntity{
         this.name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -57,12 +96,12 @@ public class Order extends AbstractEntity{
         this.idClient = idClient;
     }
 
-    public double getSum() {
-        return sum;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setSum(double sum) {
-        this.sum = sum;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     @Override
@@ -70,12 +109,12 @@ public class Order extends AbstractEntity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return idOrder == order.idOrder && idClient == order.idClient && Double.compare(order.sum, sum) == 0 && Objects.equals(name, order.name) && Objects.equals(date, order.date);
+        return idOrder == order.idOrder && idClient == order.idClient && name.equals(order.name) && date.equals(order.date) && price.equals(order.price) && paymentType == order.paymentType && products.equals(order.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idOrder, name, date, idClient, sum);
+        return Objects.hash(idOrder, name, date, idClient, price, paymentType, products);
     }
 
     @Override
@@ -85,7 +124,10 @@ public class Order extends AbstractEntity{
                 ", name='" + name + '\'' +
                 ", date=" + date +
                 ", idClient=" + idClient +
-                ", sum=" + sum +
+                ", price=" + price +
+                ", paymentType=" + paymentType +
+                ", products=" + products +
                 '}';
     }
+
 }

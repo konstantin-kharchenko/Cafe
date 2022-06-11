@@ -1,70 +1,25 @@
-.form {
-    position : relative;
-    top: 5%;
-    width  : 90%;
-    height : 90%;
-    border-radius : 20px;
-    margin : 0 auto;
-    background-color: #c89226;
-    border-top : 1px solid #ff0000;
-    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgba(255, 0, 90, 0.5), 0 0 0 7px #a2ef07, 0 0 0 8px #382825;
-    text-align : start;
+.list-counter-square {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
-
-.div {
-    position : absolute;
-    top: 5%; right: 50%;
-    width  : 20%;
-    height : auto;
-    border-radius : 20px;
-    margin : 0 auto;
-    background-color: #f4cc70;
-    border-top : 1px solid #a2ef07;
-    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 7px #784a00, 0 0 0 8px #382825;
-    text-align : center;
+.list-counter-square>li {
+    position: relative;
+    display: block;
+    margin-bottom: .25rem;
+    padding: .325rem .825rem .325rem 1.325rem;
+    color: #fff;
+    background: #C2185B;
 }
-.div3 {
-    position : absolute;
-    top: 5%; right: 77%;
-    width  : 20%;
-    height : auto;
-    border-radius : 3px;
-    margin : 0 auto;
-    background-color: #f4cc70;
-    border-top : 1px solid #a2ef07;
-    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 7px #784a00, 0 0 0 8px #382825;
-    text-align : center;
+.list-counter-square>li:last-child {
+    margin-bottom: 0;
 }
-.div2 {
-    right: 20%;
-    height : 40px;
-    border-radius : 3px;
-    margin : 0 auto;
-    background-color: #f4cc70;
-    border-top : 1px solid #a2ef07;
-    box-shadow : 0 0 0 1px #382825, 0 0 0 1px rgb(220, 9, 86), 0 0 0 1px #784a00, 0 0 0 1px #382825;
-    text-align : center;
-}
-
-.button{
-    position : absolute;
-    top: 92%; left: 92%;
-    width  : auto;
-    height : auto;
-    border-radius : 20px;
-    margin : 0 auto;
-    background-color: #f4cc70;
-    border-top : 1px solid #a2ef07;
-    box-shadow : 0 0 0 1px #382825, 0 0 0 6px rgb(220, 9, 86), 0 0 0 2px #784a00, 0 0 0 8px #382825;
-    text-align : center;
-}
-.button3 {
-    position : relative;
-    top: 50%;
-    left: 90%;
-    height     : 30px;
-    margin     : 0 auto 17px;
-    width      : 120px;
-    border-radius : 50px;
-    background-color: #a2ef07;
+.list-counter-square>li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0.5rem;
+    background: #ec407a;
 }

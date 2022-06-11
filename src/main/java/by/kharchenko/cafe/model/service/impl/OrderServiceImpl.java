@@ -2,35 +2,29 @@ package by.kharchenko.cafe.model.service.impl;
 
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.exception.ServiceException;
-import by.kharchenko.cafe.model.dao.impl.MenuDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.OrderDaoImpl;
-import by.kharchenko.cafe.model.entity.Menu;
+import by.kharchenko.cafe.model.dao.impl.ProductDaoImpl;
+import by.kharchenko.cafe.model.dao.impl.UserDaoImpl;
 import by.kharchenko.cafe.model.entity.Order;
+import by.kharchenko.cafe.model.entity.Product;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.OrderService;
-import by.kharchenko.cafe.validator.DataValidator;
-import by.kharchenko.cafe.validator.impl.DataValidatorImpl;
-import org.javatuples.Triplet;
+import by.kharchenko.cafe.validator.OrderValidator;
+import by.kharchenko.cafe.validator.impl.OrderValidatorImpl;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class OrderServiceImpl implements OrderService, BaseService<Order> {
+import static by.kharchenko.cafe.controller.RequestParameter.*;
+
+public class OrderServiceImpl implements BaseService<Order>, OrderService {
     private static final OrderServiceImpl instance = new OrderServiceImpl();
-    private final DataValidator validator = DataValidatorImpl.getInstance();
-
+    private final OrderValidator validator = OrderValidatorImpl.getInstance();
     private OrderServiceImpl() {
     }
 
     public static OrderServiceImpl getInstance() {
         return instance;
     }
-
-    @Override
-    public boolean insert(Order order) throws ServiceException {
-        return false;
-    }
-
     @Override
     public boolean delete(Order order) throws ServiceException {
         return false;
@@ -38,12 +32,47 @@ public class OrderServiceImpl implements OrderService, BaseService<Order> {
 
     @Override
     public boolean delete(int id) throws ServiceException {
-        return false;
+        try {
+            return OrderDaoImpl.getInstance().delete(id);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public Triplet<Boolean, Boolean, Boolean> add(Map<String, String> userData) throws ServiceException {
-        return null;
+    public boolean add(Map<String, String> orderData) throws ServiceException {
+        boolean isCorrectData = validator.isCorrectCreateData(orderData);
+        boolean isNameExists;
+        Integer id = Integer.parseInt(orderData.get(ID_CLIENT));
+        OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
+        try {
+            if (isCorrectData) {
+                //todo name
+                isNameExists = orderDao.findIdOrderByIdAndName(orderData.get(NAME), id).isPresent();
+                if (!isNameExists) {
+                    boolean match = orderDao.add(orderData);
+                    if (match) {
+                        EmailServiceImpl.getInstance().sendMail(orderData.get(EMAIL), "Create order", "You have " +
+                                "successfully created an order: " + orderData.get(NAME));
+                    }
+                    return match;
+                } else {
+                    orderData.put(NAME, NAME_EXISTS);
+                    return false;
+                }
+            } else {
+                if (!Objects.equals(orderData.get(NAME), "")) {
+                    isNameExists = UserDaoImpl.getInstance().findIdUserByLogin(orderData.get(NAME)).isPresent();
+                    if (isNameExists) {
+                        orderData.put(NAME, NAME_EXISTS);
+                    }
+                    return false;
+                }
+                return false;
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -52,24 +81,85 @@ public class OrderServiceImpl implements OrderService, BaseService<Order> {
     }
 
     @Override
-    public Order update(Order order) throws ServiceException {
-        return null;
-    }
-
-    @Override
-    public List<Order> findOrdersByIdClient(int idClient) throws ServiceException {
+    public boolean update(Map<String, String> orderData) throws ServiceException {
+        boolean isCorrectData = validator.isCorrectCreateData(orderData);
+        boolean isNameExists;
+        Integer idClient = Integer.parseInt(orderData.get(ID_CLIENT));
+        Integer idOrder = Integer.parseInt(orderData.get(ID_ORDER));
+        OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
         try {
-            return OrderDaoImpl.getInstance().findOrdersByIdClient(idClient);
+            if (isCorrectData) {
+                //todo name
+                isNameExists = orderDao.findIdOrderByIdAndNameAndNoIdOrder(orderData.get(NAME), idClient, idOrder).isPresent();
+                if (!isNameExists) {
+                    return orderDao.update(orderData);
+                } else {
+                    orderData.put(NAME, NAME_EXISTS);
+                    return false;
+                }
+            } else {
+                if (!Objects.equals(orderData.get(NAME), "")) {
+                    isNameExists = UserDaoImpl.getInstance().findIdUserByLogin(orderData.get(NAME)).isPresent();
+                    if (isNameExists) {
+                        orderData.put(NAME, NAME_EXISTS);
+                    }
+                    return false;
+                }
+                return false;
+            }
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public List<Menu> findMenuByIdOrder(int idOrder) throws ServiceException {
+    public List<Order> findNewOrdersByIdClient(int idClient) throws ServiceException {
         try {
-            List<Integer> menuListId = OrderDaoImpl.getInstance().findMenuIdByOrderId(idOrder);
-            return MenuDaoImpl.getInstance().findMenuListByIdList(menuListId);
+            List<Order> orders = OrderDaoImpl.getInstance().findNewOrdersByIdClient(idClient);
+            ProductDaoImpl.getInstance().addProductsInOrders(orders);
+            return orders;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findOrdersByIdClient(int idClient) throws ServiceException {
+        try {
+            List<Order> orders = OrderDaoImpl.getInstance().findOrdersByIdClient(idClient);
+            ProductDaoImpl.getInstance().addProductsInOrders(orders);
+            return orders;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public Optional<Order> findOrderByOrderId(int parseInt) throws ServiceException {
+        try {
+            return OrderDaoImpl.getInstance().findOrderByOrderId(parseInt);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteProductFromOrder(int idProduct, int idOrder) throws ServiceException {
+        try {
+            return OrderDaoImpl.getInstance().deleteProductFromOrder(idProduct, idOrder);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean addProductsIdInOrdersProductsTableByIdOrder(Integer idOrder, List<Product> products) throws ServiceException {
+        List<Integer> idList = new ArrayList<>();
+        for (Product product: products) {
+            idList.add(product.getIdProduct());
+        }
+        try {
+            return OrderDaoImpl.getInstance().addProductsIdInOrdersProductsTableByIdOrder(idOrder, idList);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

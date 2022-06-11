@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static by.kharchenko.cafe.controller.RequestParameter.*;
-
-public class ClientDaoImpl implements ClientDao, BaseDao<Client> {
+public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     private static final ClientDaoImpl instance = new ClientDaoImpl();
 
     private ClientDaoImpl() {
@@ -27,38 +25,6 @@ public class ClientDaoImpl implements ClientDao, BaseDao<Client> {
 
     public static ClientDaoImpl getInstance() {
         return instance;
-    }
-
-    @Override
-    public Optional<Client> findClientByUserId(int id) throws DaoException {
-        Client client = null;
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement userStatement = connection.prepareStatement(SqlQuery.SELECT_USER_BY_USER_ID)) {
-            userStatement.setInt(1, id);
-            try (ResultSet userResultSet = userStatement.executeQuery()) {
-                if (userResultSet.next()) {
-                    client = new Client();
-                    UserMapper.getInstance().rowMap(client, userResultSet);
-                    try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.SELECT_CLIENT_BY_USER_ID)) {
-                        clientStatement.setInt(1, id);
-                        try (ResultSet clientResultSet = clientStatement.executeQuery()) {
-                            if (clientResultSet.next()) {
-                                ClientMapper.getInstance().rowMap(client, clientResultSet);
-                            }
-                        }
-                    }
-                    return Optional.of(client);
-                }
-                return Optional.of(client);
-            }
-        } catch (SQLException | DaoException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public boolean insert(Client client) throws DaoException {
-        return false;
     }
 
     @Override
@@ -73,20 +39,6 @@ public class ClientDaoImpl implements ClientDao, BaseDao<Client> {
 
     @Override
     public boolean add(Map<String, String> userData) throws DaoException {
-        int result;
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_CLIENT)) {
-            statement.setBoolean(1, Boolean.parseBoolean(userData.get(IS_BLOCK)));
-            statement.setInt(2, Integer.parseInt(userData.get(LOYALTY_POINTS)));
-            statement.setString(3, userData.get(PAYMENT_TYPE));
-            statement.setInt(4, Integer.parseInt(userData.get(ID_USER)));
-            result = statement.executeUpdate();
-            if (result >= 1) {
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
         return false;
     }
 
@@ -96,7 +48,29 @@ public class ClientDaoImpl implements ClientDao, BaseDao<Client> {
     }
 
     @Override
-    public Client update(Client client) throws DaoException {
-        return null;
+    public boolean update(Map<String, String> t) throws DaoException {
+        return false;
+    }
+
+    @Override
+    public Client findClientByUserId(int idUser) throws DaoException {
+        Client client = null;
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement userStatement = connection.prepareStatement(SqlQuery.SELECT_USER_BY_USER_ID);
+             PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.SELECT_CLIENT_BY_USER_ID)) {
+            userStatement.setInt(1, idUser);
+            clientStatement.setInt(1, idUser);
+            try (ResultSet userResultSet = userStatement.executeQuery();
+                 ResultSet clientResultSet = clientStatement.executeQuery()) {
+                if (userResultSet.next() && clientResultSet.next()) {
+                    client = new Client();
+                    UserMapper.getInstance().rowMap(client, userResultSet);
+                    ClientMapper.getInstance().rowMap(client, clientResultSet);
+                }
+                return client;
+            }
+        } catch (SQLException | DaoException e) {
+            throw new DaoException(e);
+        }
     }
 }

@@ -17,8 +17,6 @@ public interface DataValidator {
 
     boolean isCorrectEmail(String email);
 
-    boolean isCorrectPaymentType(String paymentType);
-
     boolean isCorrectIsBlock(String isBlock);
 
     boolean isCorrectLoyaltyPoints(String loyaltyPoints);
@@ -29,7 +27,10 @@ public interface DataValidator {
 
     boolean isCorrectPhone(String phone);
 
-    boolean isCorrectUserRole(String user_role);
+    boolean isCorrectUserRole(String userRole);
+
+    boolean isCorrectPhoto(String photo);
 
     boolean isCorrectRegisterData(Map<String, String> userData);
+    boolean isCorrectUpdateData(Map<String, String> userData);
 }

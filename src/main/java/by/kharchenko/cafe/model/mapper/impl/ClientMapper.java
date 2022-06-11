@@ -25,10 +25,9 @@ public class ClientMapper implements CustomRowMapper<Client> {
         try {
             client.setIdClient(resultSet.getInt(RequestParameter.ID_CLIENT));
             client.setLoyaltyPoints(resultSet.getInt(RequestParameter.LOYALTY_POINTS));
-            client.setPaymentType(Client.PaymentType.valueOf(resultSet.getString(RequestParameter.PAYMENT_TYPE).toUpperCase()));
             client.setBlock(resultSet.getBoolean(RequestParameter.IS_BLOCK));
-            //photo todo
-            logger.log(Level.INFO,"client added");
+            client.setClientAccount(resultSet.getBigDecimal(RequestParameter.CLIENT_ACCOUNT));
+            logger.log(Level.INFO, "client " + client.getName() + " added");
         } catch (SQLException e) {
             throw new DaoException(e);
         }

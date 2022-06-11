@@ -27,7 +27,7 @@ public class AdministratorMapper implements CustomRowMapper<Administrator> {
             administrator.setStatus(Administrator.Status.valueOf(resultSet.getString(RequestParameter.STATUS).toUpperCase()));
             administrator.setExperience(Double.parseDouble(resultSet.getString(RequestParameter.EXPERIENCE)));
             //information todo
-            logger.log(Level.INFO,"administrator added");
+            logger.log(Level.INFO,"administrator " + administrator.getName() + " added");
         } catch (SQLException e) {
             throw new DaoException(e);
         }

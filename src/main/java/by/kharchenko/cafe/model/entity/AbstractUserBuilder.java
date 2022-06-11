@@ -1,5 +1,6 @@
 package by.kharchenko.cafe.model.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public abstract class AbstractUserBuilder<T extends User> {
@@ -42,8 +43,8 @@ public abstract class AbstractUserBuilder<T extends User> {
         return this;
     }
 
-    public AbstractUserBuilder<T> withAge(int age) {
-        user.age = age;
+    public AbstractUserBuilder<T> withAge(LocalDate birthday) {
+        user.birthday = birthday;
         return this;
     }
 

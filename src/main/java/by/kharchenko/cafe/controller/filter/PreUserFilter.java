@@ -1,75 +1,67 @@
 package by.kharchenko.cafe.controller.filter;
 
-import by.kharchenko.cafe.exception.FilterException;
 import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.entity.Client;
 import by.kharchenko.cafe.model.entity.Order;
+import by.kharchenko.cafe.model.entity.Product;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.impl.OrderServiceImpl;
+import by.kharchenko.cafe.model.service.impl.ProductServiceImpl;
 import by.kharchenko.cafe.model.service.impl.UserServiceImpl;
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static by.kharchenko.cafe.controller.PagePath.*;
+import static by.kharchenko.cafe.controller.PagePath.ADMINISTRATOR_PAGE;
+import static by.kharchenko.cafe.controller.PagePath.CLIENT_PAGE;
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
 
 @WebFilter(filterName = "PreUserFilter", dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST},
         urlPatterns = {"/" + CLIENT_PAGE, "/" + ADMINISTRATOR_PAGE})
 public class PreUserFilter implements Filter {
-    private static final Logger logger = LogManager.getLogger(PreUserFilter.class);
-
     public void init(FilterConfig config) throws ServletException {
     }
 
+    public void destroy() {
+    }
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         HttpSession session = httpServletRequest.getSession(true);
         String login = (String) session.getValue(LOGIN_ATTRIBUTE);
-        if (login == null) {
-            httpServletResponse.sendRedirect(LOGIN_PAGE);
-        } else {
-            User user = (User) request.getAttribute(USER_ATTRIBUTE);
-            if (user == null) {
-                try {
-                    Optional<? extends User> optionalUser = UserServiceImpl.getInstance().findUserByLogin(login);
-                    if (optionalUser.isPresent()) {
-                        User user1 = optionalUser.get();
-                        request.setAttribute(USER_ATTRIBUTE, user1);
-                        if (user1.getRole() == User.Role.CLIENT) {
-                            session.setAttribute(NEW_PAGE, CLIENT_PAGE);
-                            List<Order> orders = OrderServiceImpl.getInstance().findOrdersByIdClient(((Client)user1).getIdClient());
-                            request.setAttribute(ORDERS_ATTRIBUTE, orders);
-                        } else if (user1.getRole() == User.Role.ADMINISTRATOR) {
-                            session.setAttribute(NEW_PAGE, ADMINISTRATOR_PAGE);
-                        }
-                    } else {
-                        throw new FilterException("no user");
-                    }
-                } catch (ServiceException | FilterException e) {
-                    throw new ServletException(e);
+        User.Role role = (User.Role) session.getValue(ROLE_ATTRIBUTE);
+        try {
+            Optional<? extends User> optionalUser = UserServiceImpl.getInstance().findUserByLogin(login, role);
+            if (optionalUser.isPresent()) {
+
+                User user = optionalUser.get();
+                String stringPhoto = user.getStringPhoto();
+                user.setStringPhoto("");
+                session.setAttribute(USER_ATTRIBUTE, user);
+                request.setAttribute(PHOTO_ATTRIBUTE, stringPhoto);
+                if (user.getRole() == User.Role.CLIENT){
+                    List<Order> orders = OrderServiceImpl.getInstance().findNewOrdersByIdClient(((Client)user).getIdClient());
+                    List<Product> products = ProductServiceImpl.getInstance().findNewProducts();
+                    request.setAttribute(ORDERS_ATTRIBUTE, orders);
+                    request.setAttribute(PRODUCTS_ATTRIBUTE, products);
                 }
-            } else {
-                if (user.getRole() == User.Role.CLIENT) {
-                    session.setAttribute(NEW_PAGE, CLIENT_PAGE);
-                } else if (user.getRole() == User.Role.ADMINISTRATOR) {
-                    session.setAttribute(NEW_PAGE, ADMINISTRATOR_PAGE);
+                else if (user.getRole() == User.Role.ADMINISTRATOR){
                 }
+            }else {
+                throw new ServletException("no user");
             }
+
+        } catch (ServiceException e) {
+            throw new ServletException(e);
         }
         chain.doFilter(request, response);
-    }
-
-    public void destroy() {
     }
 }

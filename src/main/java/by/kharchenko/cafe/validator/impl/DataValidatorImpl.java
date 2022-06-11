@@ -1,10 +1,10 @@
 package by.kharchenko.cafe.validator.impl;
 
-import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.validator.DataValidator;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.Objects;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
@@ -26,15 +26,14 @@ public class DataValidatorImpl implements DataValidator {
     private static final String NAME_REGEX = "^[A-Z][a-z]+";
     private static final String SURNAME_REGEX = "^[A-Z](([a-z]{1,}(['-]*)[a-z]*)|(['-][a-z]+))";
     private static final String NUMBER_PASSWORD_REGEX = ".*[0-9].*";
-    private static final String AGE_REGEX = "[1-9]([0-9]{1,2})";
     private static final String PHONE_REGEX = "\\+375(33|29|25|44)\\d{7}";
     private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private static final String ROLE_REGEX = "(client)|(administrator)";
-    private static final String PAYMENT_TYPE_REGEX = "(cash)|(client account)";
     private static final String STATUS_REGEX = "(accepted)|(waiting)|(declined)";
     private static final String LOYALTY_POINTS_REGEX = "[0-9]{1,2}";
     private static final String EXPERIENCE_REGEX = "[0-9]{1,2}";
     private static final String IS_BLOCK_REGEX = "(true)|(false)";
+    private static final String PHOTO_REGEX = "^.+(.jpg)|(.jpeg)|(.raw)|(.png)$";
 
 
     @Override
@@ -56,7 +55,10 @@ public class DataValidatorImpl implements DataValidator {
 
     @Override
     public boolean isCorrectAge(String age) {
-        return age.matches(AGE_REGEX);
+        LocalDate localDate = LocalDate.parse(age);
+        LocalDate end = LocalDate.now();
+        long years = ChronoUnit.YEARS.between(localDate, end);
+        return  years > 11;
     }
 
     @Override
@@ -72,11 +74,6 @@ public class DataValidatorImpl implements DataValidator {
     @Override
     public boolean isCorrectEmail(String email) {
         return email.matches(EMAIL_REGEX);
-    }
-
-    @Override
-    public boolean isCorrectPaymentType(String paymentType) {
-        return paymentType.matches(PAYMENT_TYPE_REGEX);
     }
 
     @Override
@@ -105,8 +102,13 @@ public class DataValidatorImpl implements DataValidator {
     }
 
     @Override
-    public boolean isCorrectUserRole(String user_role) {
-        return user_role.toLowerCase().matches(ROLE_REGEX);
+    public boolean isCorrectUserRole(String userRole) {
+        return userRole.toLowerCase().matches(ROLE_REGEX);
+    }
+
+    @Override
+    public boolean isCorrectPhoto(String photo) {
+        return photo.matches(PHOTO_REGEX);
     }
 
     @Override
@@ -128,9 +130,9 @@ public class DataValidatorImpl implements DataValidator {
             isCorrectData = false;
             userData.put(PASSWORD, "");
         }
-        if (!isCorrectAge(userData.get(AGE))) {
+        if (!isCorrectAge(userData.get(BIRTHDAY))) {
             isCorrectData = false;
-            userData.put(AGE, "");
+            userData.put(BIRTHDAY, "");
         }
         if (!isCorrectUserRole(userData.get(ROLE))) {
             isCorrectData = false;
@@ -144,28 +146,27 @@ public class DataValidatorImpl implements DataValidator {
             isCorrectData = false;
             userData.put(PHONE_NUMBER, "");
         }
-        if (Objects.equals(userData.get(ROLE), User.Role.ADMINISTRATOR.toString().toLowerCase())) {
-            if (!isCorrectExperience(userData.get(EXPERIENCE))) {
-                isCorrectData = false;
-                userData.put(EXPERIENCE, "");
-            }
-            if (!isCorrectStatus(userData.get(STATUS))) {
-                isCorrectData = false;
-                userData.put(EXPERIENCE, "");
-            }
-        } else if (Objects.equals(userData.get(ROLE), User.Role.CLIENT.toString().toLowerCase())) {
-            if (!isCorrectLoyaltyPoints(userData.get(LOYALTY_POINTS))) {
-                isCorrectData = false;
-                userData.put(EXPERIENCE, "");
-            }
-            if (!isCorrectPaymentType(userData.get(PAYMENT_TYPE))) {
-                isCorrectData = false;
-                userData.put(EXPERIENCE, "");
-            }
-            if (!isCorrectIsBlock(userData.get(IS_BLOCK))) {
-                isCorrectData = false;
-                userData.put(IS_BLOCK, "");
-            }
+        return isCorrectData;
+    }
+
+    @Override
+    public boolean isCorrectUpdateData(Map<String, String> userData) {
+        boolean isCorrectData = true;
+        if (!isCorrectName(userData.get(NAME))) {
+            isCorrectData = false;
+            userData.put(NAME, "");
+        }
+        if (!isCorrectSurname(userData.get(SURNAME))) {
+            isCorrectData = false;
+            userData.put(SURNAME, "");
+        }
+        if (!isCorrectLogin(userData.get(LOGIN))) {
+            isCorrectData = false;
+            userData.put(LOGIN, "");
+        }
+        if (!isCorrectPhone(userData.get(PHONE_NUMBER))) {
+            isCorrectData = false;
+            userData.put(PHONE_NUMBER, "");
         }
         return isCorrectData;
     }
