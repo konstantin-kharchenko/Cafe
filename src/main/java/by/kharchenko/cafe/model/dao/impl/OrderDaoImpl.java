@@ -6,10 +6,11 @@ import by.kharchenko.cafe.model.dao.OrderDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.entity.Ingredient;
 import by.kharchenko.cafe.model.entity.Order;
-import by.kharchenko.cafe.model.entity.Product;
 import by.kharchenko.cafe.model.mapper.impl.OrderMapper;
-import by.kharchenko.cafe.model.mapper.impl.ProductMapper;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -21,11 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
-import static by.kharchenko.cafe.controller.RequestParameter.PAYMENT_TYPE;
 import static by.kharchenko.cafe.model.dao.SqlQuery.INSERT_PRODUCTS_ID_BY_ORDER_ID;
-import static by.kharchenko.cafe.model.dao.SqlQuery.SELECT_PRODUCTS_BY_ID_PRODUCTS;
 
 public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
+    private static final Logger logger = LogManager.getLogger(OrderDaoImpl.class);
     private static final OrderDaoImpl instance = new OrderDaoImpl();
 
     private OrderDaoImpl() {
@@ -55,20 +55,21 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 connection.commit();
                 return true;
             } else {
-                throw new SQLException("failed to delete in orders table");
+                throw new DaoException("failed to delete in orders table");
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                throw new DaoException(ex);
+                logger.log(Level.ERROR, ex);
             }
             throw new DaoException(e);
         } finally {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new DaoException(e);
+                logger.log(Level.ERROR, e);
             }
         }
     }
@@ -89,9 +90,10 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
             if (result > 0) {
                 return true;
             } else {
-                throw new SQLException("failed to add in users table");
+                throw new DaoException("failed to add in users table");
             }
         } catch (SQLException | ParseException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -118,9 +120,10 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
             if (result > 0) {
                 return true;
             } else {
-                throw new SQLException("failed to add in users table");
+                throw new DaoException("failed to add in users table");
             }
         } catch (SQLException | ParseException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -140,6 +143,7 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 return orders;
             }
         } catch (SQLException | DaoException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -159,6 +163,7 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 return orders;
             }
         } catch (SQLException | DaoException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -178,6 +183,7 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 return id;
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -195,6 +201,7 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 }
             }
         } catch (SQLException | DaoException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
         return Optional.empty();
@@ -214,23 +221,24 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 if (match) {
                     connection.commit();
                 } else {
-                    throw new SQLException("failed to delete in order_products table");
+                    throw new DaoException("failed to delete in order_products table");
                 }
             } else {
-                throw new SQLException("failed to delete in order_products table");
+                throw new DaoException("failed to delete in order_products table");
             }
         } catch (SQLException | DaoException e) {
+            logger.log(Level.ERROR, e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                throw new DaoException(ex);
+                logger.log(Level.ERROR, ex);
             }
             throw new DaoException(e);
         } finally {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new DaoException(e);
+                logger.log(Level.ERROR, e);
             }
         }
         return true;
@@ -273,10 +281,11 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 if (result2 > 0) {
                     return true;
                 } else {
-                    throw new SQLException("failed to update in orders table");
+                    throw new DaoException("failed to update in orders table");
                 }
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -323,25 +332,26 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                         if (match) {
                             connection.commit();
                         } else {
-                            throw new SQLException("failed to update in orders table");
+                            throw new DaoException("failed to update in orders table");
                         }
                     } else {
-                        throw new SQLException("failed to update in orders table");
+                        throw new DaoException("failed to update in orders table");
                     }
                 }
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                throw new DaoException(ex);
+                logger.log(Level.ERROR, ex);
             }
             throw new DaoException(e);
         } finally {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new DaoException(e);
+                logger.log(Level.ERROR, e);
             }
         }
         return true;
@@ -363,6 +373,65 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
                 return id;
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findTodayOrders() throws DaoException {
+        long time = System.currentTimeMillis();
+        Date date = new Date(time);
+        List<Order> orders = new ArrayList<>();
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_TODAY_ORDERS)) {
+            statement.setDate(1, date);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Order order = new Order();
+                    OrderMapper.getInstance().rowMap(order, resultSet);
+                    orders.add(order);
+                }
+                return orders;
+            }
+        } catch (SQLException | DaoException e) {
+            logger.log(Level.ERROR, e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public BigDecimal priceByOrderId(int idOrder) throws DaoException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_PRICE_BY_ORDER_ID)) {
+            statement.setInt(1, idOrder);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBigDecimal(1);
+                } else {
+                    throw new DaoException("no client account");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Order.PaymentType paymentTypeByOrderId(int idOrder) throws DaoException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_PAYMENT_TYPE_BY_ORDER_ID)) {
+            statement.setInt(1, idOrder);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Order.PaymentType.valueOf(resultSet.getString(1).toUpperCase());
+                } else {
+                    throw new DaoException("no client account");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }

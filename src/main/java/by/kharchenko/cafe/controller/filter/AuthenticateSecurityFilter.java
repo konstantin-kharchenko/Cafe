@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+
 import static by.kharchenko.cafe.controller.RequestAttribute.ROLE_ATTRIBUTE;
 
 @WebFilter(filterName = "AuthenticateSecurityFilter", urlPatterns = {"/view/jsp/client/*", "/view/jsp/administrator/*",

@@ -2,9 +2,7 @@ package by.kharchenko.cafe.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +42,7 @@ public class Product extends AbstractEntity {
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
+
     public Integer getIdProduct() {
         return idProduct;
     }

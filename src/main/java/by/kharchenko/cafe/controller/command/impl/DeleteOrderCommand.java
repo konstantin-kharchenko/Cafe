@@ -1,5 +1,6 @@
 package by.kharchenko.cafe.controller.command.impl;
 
+import by.kharchenko.cafe.controller.PagePath;
 import by.kharchenko.cafe.controller.command.Command;
 import by.kharchenko.cafe.controller.command.Router;
 import by.kharchenko.cafe.exception.CommandException;
@@ -17,14 +18,14 @@ public class DeleteOrderCommand implements Command {
         String idOrder = request.getParameter(ID_ORDER_ATTRIBUTE);
         try {
             boolean match = OrderServiceImpl.getInstance().delete(Integer.parseInt(idOrder));
-            if (match){
+            if (match) {
                 HttpSession session = request.getSession();
                 String userPage = (String) session.getValue(USER_PAGE);
                 return new Router(userPage, Router.Type.REDIRECT);
             }
+            return new Router(PagePath.CLIENT_PAGE);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        return null;
     }
 }

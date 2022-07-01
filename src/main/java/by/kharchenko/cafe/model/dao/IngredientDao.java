@@ -2,7 +2,6 @@ package by.kharchenko.cafe.model.dao;
 
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.entity.Ingredient;
-import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.Product;
 import org.javatuples.Pair;
 
@@ -18,4 +17,17 @@ public interface IngredientDao {
 
     boolean addIngredientsInProduct(Product product) throws DaoException;
 
+    List<Ingredient> findIngredientsByPageNumber(int currentPage) throws DaoException;
+
+    int countProducts() throws DaoException;
+
+    Optional<Ingredient> findIngredientByName(String name) throws DaoException;
+
+    Optional<Integer> findIdIngredientByName(String name) throws DaoException;
+
+    Optional<Ingredient> findIngredientById(Integer idIngredient) throws DaoException;
+
+    Optional<Integer> findIdIngredientByNameAndNotId(String name, Integer idIngredient) throws DaoException;
+
+    double findGrams(int idIngredient, int idProduct) throws DaoException;
 }

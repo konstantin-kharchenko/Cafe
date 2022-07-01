@@ -16,17 +16,21 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
+import static by.kharchenko.cafe.controller.RequestAttribute.PHOTO_ATTRIBUTE;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
-public class UpdateUserCommand implements Command {
+public class UpdateAdministratorCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Map<String, String> userData = new HashMap<>();
         Router router;
         HttpSession session = request.getSession();
+        ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale((String) session.getValue(LANGUAGE_ATTRIBUTE)));
         Part filePart = null;
         try {
             User user = (User) session.getValue(USER_ATTRIBUTE);
@@ -42,31 +46,36 @@ public class UpdateUserCommand implements Command {
             userData.put(PHOTO_NAME, photoName);
             userData.put(ID_USER, user.getIdUser().toString());
             userData.put(ROLE, user.getRole().toString());
+            userData.put(EXPERIENCE, request.getParameter(EXPERIENCE_ATTRIBUTE));
             boolean match = UserServiceImpl.getInstance().update(userData);
             if (match) {
                 String userPage = (String) session.getValue(USER_PAGE);
                 router = new Router(userPage, Router.Type.REDIRECT);
             } else {
-                String fromPage = request.getParameter(FROM_PAGE);
-                router = new Router(fromPage);
+                router = new Router(PagePath.ADMINISTRATOR_PROFILE_PAGE);
                 StringBuilder stringBuilder = new StringBuilder();
                 if (userData.get(NAME).equals("")) {
-                    stringBuilder.append("Invalid Name. ");
+                    stringBuilder.append(bundle.getString(INVALID_NAME));
+                    stringBuilder.append(" ");
                 }
                 if (userData.get(SURNAME).equals("")) {
-                    stringBuilder.append("Invalid Surname. ");
+                    stringBuilder.append(bundle.getString(INVALID_SURNAME));
+                    stringBuilder.append(" ");
                 }
                 if (userData.get(LOGIN).equals("")) {
-                    stringBuilder.append("Invalid Login. ");
+                    stringBuilder.append(bundle.getString(INVALID_LOGIN));
+                    stringBuilder.append(" ");
                 }
                 if (userData.get(LOGIN).equals(LOGIN_EXISTS)) {
-                    stringBuilder.append("Login Exists. ");
+                    stringBuilder.append(bundle.getString(BUNDLE_LOGIN_EXISTS));
+                    stringBuilder.append(" ");
                 }
                 if (userData.get(PHONE_NUMBER).equals("")) {
-                    stringBuilder.append("Invalid Phone Number. ");
+                    stringBuilder.append(bundle.getString(INVALID_PHONE_NUMBER));
+                    stringBuilder.append(" ");
                 }
-                if (!userData.get(PHOTO).equals("Empty")) {
-                    stringBuilder.append("Invalid Photo File. ");
+                if (!userData.get(PHOTO).equals(EMPTY)) {
+                    stringBuilder.append(bundle.getString(INVALID_PHOTO_FILE));
                 }
                 request.setAttribute(MSG_ATTRIBUTE, stringBuilder.toString());
                 String stringPhoto = UserServiceImpl.getInstance().findStringPhotoByStringPath(user.getPhotoPath());

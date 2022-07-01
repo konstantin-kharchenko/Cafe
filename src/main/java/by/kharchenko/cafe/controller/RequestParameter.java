@@ -16,6 +16,7 @@ public final class RequestParameter {
     public static final String BIRTHDAY = "birthday";
     public static final String ID_CLIENT = "id_client";
     public static final String IS_BLOCK = "is_block";
+    public static final String BLOCK = "block";
     public static final String LOYALTY_POINTS = "loyalty_points";
     public static final String CLIENT_ACCOUNT = "client_account";
     public static final String ID_ADMINISTRATOR = "id_administrator";
@@ -32,6 +33,7 @@ public final class RequestParameter {
     public static final String GRAMS = "grams";
     public static final String LOGIN_EXISTS = "exists";
     public static final String NAME_EXISTS = "exists";
+    public static final String BUNDLE_NAME = "localization/pagecontent";
 
     private RequestParameter() {
     }

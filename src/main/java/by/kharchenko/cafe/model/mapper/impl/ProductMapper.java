@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class ProductMapper implements CustomRowMapper<Product> {
@@ -32,7 +31,7 @@ public class ProductMapper implements CustomRowMapper<Product> {
             product.setDate(resultSet.getDate(RequestParameter.DATE).toLocalDate());
             product.setPrice(resultSet.getBigDecimal(RequestParameter.PRICE));
             product.setPhoto(resultSet.getString(RequestParameter.PHOTO));
-            logger.log(Level.INFO, "product " + product.getName() + " added");
+            logger.log(Level.INFO, product.getName());
         } catch (SQLException e) {
             throw new DaoException(e);
         }

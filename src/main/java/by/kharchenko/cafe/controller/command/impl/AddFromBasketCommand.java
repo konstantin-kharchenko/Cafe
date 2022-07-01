@@ -25,12 +25,11 @@ public class AddFromBasketCommand implements Command {
             if (basketProducts != null && basketProducts.size() > 0) {
                 boolean match = OrderServiceImpl.getInstance().addProductsIdInOrdersProductsTableByIdOrder(Integer.parseInt(idOrder),
                         basketProducts.stream().toList());
-                if (match){
+                if (match) {
                     request.setAttribute(ID_ORDER_ATTRIBUTE, idOrder);
                     session.setAttribute(BASKET_PRODUCTS_ATTRIBUTE, null);
                     return new Router(PagePath.ORDER_PAGE);
-                }
-                else {
+                } else {
                     String userPage = (String) session.getValue(USER_PAGE);
                     return new Router(userPage, Router.Type.REDIRECT);
                 }
@@ -39,7 +38,7 @@ public class AddFromBasketCommand implements Command {
                 return new Router(PagePath.ORDER_PAGE);
             }
         } catch (ServiceException e) {
-            throw new RuntimeException(e);
+            throw new CommandException(e);
         }
     }
 }

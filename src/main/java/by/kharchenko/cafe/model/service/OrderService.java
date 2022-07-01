@@ -17,4 +17,8 @@ public interface OrderService {
     boolean deleteProductFromOrder(int idProduct, int idOrder) throws ServiceException;
 
     boolean addProductsIdInOrdersProductsTableByIdOrder(Integer idOrder, List<Product> toList) throws ServiceException;
+
+    boolean confirmReceipt(int idOrder, int idClient) throws ServiceException;
+
+    boolean reject(int idOrder, int idClient) throws ServiceException;
 }

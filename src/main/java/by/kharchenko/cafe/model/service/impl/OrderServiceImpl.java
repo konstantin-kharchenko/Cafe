@@ -2,6 +2,7 @@ package by.kharchenko.cafe.model.service.impl;
 
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.exception.ServiceException;
+import by.kharchenko.cafe.model.dao.impl.ClientDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.OrderDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.ProductDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.UserDaoImpl;
@@ -12,19 +13,24 @@ import by.kharchenko.cafe.model.service.OrderService;
 import by.kharchenko.cafe.validator.OrderValidator;
 import by.kharchenko.cafe.validator.impl.OrderValidatorImpl;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class OrderServiceImpl implements BaseService<Order>, OrderService {
     private static final OrderServiceImpl instance = new OrderServiceImpl();
+    private static final String MAIL_SUBJECT = "Create order";
+    private static final String MAIL_TEXT = "You have successfully created an order: ";
     private final OrderValidator validator = OrderValidatorImpl.getInstance();
+
     private OrderServiceImpl() {
     }
 
     public static OrderServiceImpl getInstance() {
         return instance;
     }
+
     @Override
     public boolean delete(Order order) throws ServiceException {
         return false;
@@ -47,13 +53,11 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
         OrderDaoImpl orderDao = OrderDaoImpl.getInstance();
         try {
             if (isCorrectData) {
-                //todo name
                 isNameExists = orderDao.findIdOrderByIdAndName(orderData.get(NAME), id).isPresent();
                 if (!isNameExists) {
                     boolean match = orderDao.add(orderData);
                     if (match) {
-                        EmailServiceImpl.getInstance().sendMail(orderData.get(EMAIL), "Create order", "You have " +
-                                "successfully created an order: " + orderData.get(NAME));
+                        EmailServiceImpl.getInstance().sendMail(orderData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT + orderData.get(NAME));
                     }
                     return match;
                 } else {
@@ -155,11 +159,42 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
     @Override
     public boolean addProductsIdInOrdersProductsTableByIdOrder(Integer idOrder, List<Product> products) throws ServiceException {
         List<Integer> idList = new ArrayList<>();
-        for (Product product: products) {
+        for (Product product : products) {
             idList.add(product.getIdProduct());
         }
         try {
             return OrderDaoImpl.getInstance().addProductsIdInOrdersProductsTableByIdOrder(idOrder, idList);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean confirmReceipt(int idOrder, int idClient) throws ServiceException {
+        try {
+            Order.PaymentType paymentType = OrderDaoImpl.getInstance().paymentTypeByOrderId(idOrder);
+            if (paymentType == Order.PaymentType.CLIENT_ACCOUNT) {
+                BigDecimal orderPrice = OrderDaoImpl.getInstance().priceByOrderId(idOrder);
+                BigDecimal clientAccount = ClientDaoImpl.getInstance().clientAccountByIdClient(idClient);
+                if (clientAccount.compareTo(orderPrice) < 0) {
+                    return false;
+                }
+                ClientDaoImpl.getInstance().subPriceFromClientAccount(orderPrice, idClient);
+            }
+            OrderDaoImpl.getInstance().delete(idOrder);
+            ClientDaoImpl.getInstance().addLoyaltyPoints(idClient);
+            return true;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean reject(int idOrder, int idClient) throws ServiceException {
+        try {
+            OrderDaoImpl.getInstance().delete(idOrder);
+            ClientDaoImpl.getInstance().subLoyaltyPoints(idClient);
+            return true;
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

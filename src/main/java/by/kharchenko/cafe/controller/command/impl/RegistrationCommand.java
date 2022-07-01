@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
 import static by.kharchenko.cafe.controller.RequestAttribute.BIRTHDAY_ATTRIBUTE;
@@ -33,15 +35,16 @@ public class RegistrationCommand implements Command {
         userData.put(BIRTHDAY, request.getParameter(BIRTHDAY_ATTRIBUTE));
         userData.put(ROLE, role);
         HttpSession session = request.getSession();
+        ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale((String) session.getValue(LANGUAGE_ATTRIBUTE)));
         try {
             boolean match = UserServiceImpl.getInstance().add(userData);
             if (match) {
-                session.setAttribute(MSG_ATTRIBUTE, "success registration");
+                session.setAttribute(MSG_ATTRIBUTE, bundle.getString(SUCCESS_REGISTRATION));
                 request.setAttribute(REPEAT_ATTRIBUTE, false);
                 router = new Router(PagePath.HOME_PAGE, Router.Type.REDIRECT);
             } else {
                 if (userData.get(LOGIN).equals(LOGIN_EXISTS)) {
-                    request.setAttribute(MSG_ATTRIBUTE, "login exists");
+                    request.setAttribute(MSG_ATTRIBUTE, bundle.getString(BUNDLE_LOGIN_EXISTS));
                     userData.put(LOGIN, "");
                 }
                 request.setAttribute(USER_ATTRIBUTE, userData);

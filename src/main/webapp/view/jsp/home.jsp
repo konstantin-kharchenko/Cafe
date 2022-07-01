@@ -72,18 +72,21 @@
 <div class="container text-center">
     <h1 class="h3 mb-3 fw-normal"><fmt:message key="client.whats_new" bundle="${lang}"/></h1>
     <div class="row row-cols-1">
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><h1 class="h3 mb-3 fw-normal">${msg}</h1>
+            </li>
+        </ul>
         <c:forEach items="${products}" var="product">
             <div class="card" style="width: 100rem;">
-                    <%--<img class="card-img-top" src="${abs}/img/default.jpg" alt="Card image cap">--%>
                 <div class="card-body">
-                    <h5 class="card-title">Name: ${product.name}</h5>
+                    <h5 class="card-title"><fmt:message key="product.name" bundle="${lang}"/>: ${product.name}</h5>
                     <div class="d-flex flex-column align-items-center text-center p-3 py-5">
                         <img class="rounded-circle mt-5" width="50px" src="data:image/png;base64,${product.stringPhoto}">
                     </div>
-                    <p class="card-text">Date: ${product.date}</p>
-                    <p class="card-text">Price: ${product.price}</p>
+                    <p class="card-text"><fmt:message key="product.date" bundle="${lang}"/>: ${product.date}</p>
+                    <p class="card-text"><fmt:message key="product.price" bundle="${lang}"/>: ${product.price}</p>
                     <a href="${abs}/controller?command=go_product_page&id_product=${product.idProduct}"
-                       class="btn btn-primary">Show more</a>
+                       class="btn btn-primary"><fmt:message key="product.show.more" bundle="${lang}"/></a>
                 </div>
             </div>
             <br/>

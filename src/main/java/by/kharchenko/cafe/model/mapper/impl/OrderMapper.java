@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Level;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class OrderMapper implements CustomRowMapper<Order> {
@@ -31,7 +30,8 @@ public class OrderMapper implements CustomRowMapper<Order> {
             order.setDate(resultSet.getDate(RequestParameter.DATE).toLocalDate());
             order.setPrice(resultSet.getBigDecimal(RequestParameter.PRICE));
             order.setPaymentType(Order.PaymentType.valueOf(resultSet.getString(RequestParameter.PAYMENT_TYPE).toUpperCase()));
-            logger.log(Level.INFO, "order " + order.getName() + " added");
+            order.setIdClient(resultSet.getInt(RequestParameter.ID_CLIENT));
+            logger.log(Level.INFO, order.getName());
         } catch (SQLException e) {
             throw new DaoException(e);
         }

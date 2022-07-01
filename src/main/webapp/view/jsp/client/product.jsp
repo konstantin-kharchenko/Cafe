@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>${user.getLogin()}</title>
+    <title>${product.name}</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
     <link href="${abs}/view/css/bootstrap.min.css" rel="stylesheet">
@@ -57,7 +57,8 @@
             <div class="row row-cols-2">
                 <div>
                     <article>
-                        <h1 class="h3 mb-3 fw-normal">Продукт: ${product.name}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="product"
+                                                                   bundle="${lang}"/>: ${product.name}</h1>
                         <div class="container text-center">
                             <aside>
                                 <div class="list-group">
@@ -86,13 +87,18 @@
                     <br/><br/>
                     <a class="list-group-item list-group-item-action flex-column align-items-start border border-primary">
                         <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                            <img class="rounded-circle mt-5" width="50px" src="data:image/png;base64,${product.stringPhoto}">
+                            <img class="rounded-circle mt-5" width="50px"
+                                 src="data:image/png;base64,${product.stringPhoto}">
                         </div>
-                        <h1 class="h3 mb-3 fw-normal">Название: ${product.name}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="product.name"
+                                                                   bundle="${lang}"/>: ${product.name}</h1>
                         <br/>
-                        <h1 class="h3 mb-3 fw-normal">Действует до: ${product.date} руб.</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="product.shelf.life"
+                                                                   bundle="${lang}"/>: ${product.date} <fmt:message
+                                key="byn" bundle="${lang}"/>.</h1>
                         <br/>
-                        <h1 class="h3 mb-3 fw-normal">Цена: ${product.price}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="product.price"
+                                                                   bundle="${lang}"/>: ${product.price}</h1>
                         <br/>
                     </a>
 

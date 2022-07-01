@@ -11,11 +11,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static by.kharchenko.cafe.controller.PagePath.ADMINISTRATOR_PAGE;
 import static by.kharchenko.cafe.controller.PagePath.CLIENT_PAGE;
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
+import static by.kharchenko.cafe.controller.RequestParameter.BUNDLE_NAME;
 
 public class SignInCommand implements Command {
     @Override
@@ -23,10 +26,11 @@ public class SignInCommand implements Command {
         String login = request.getParameter(LOGIN_ATTRIBUTE);
         String password = request.getParameter(PASSWORD_ATTRIBUTE);
         Router router;
+        HttpSession session = request.getSession();
         try {
+            ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale((String) session.getValue(LANGUAGE_ATTRIBUTE)));
             Optional<User.Role> optionalRole = UserServiceImpl.getInstance().authenticate(login, password);
             if (optionalRole.isPresent()) {
-                HttpSession session = request.getSession();
                 User.Role role = optionalRole.get();
                 session.setAttribute(ROLE_ATTRIBUTE, role);
                 session.setAttribute(LOGIN_ATTRIBUTE, login);
@@ -43,7 +47,7 @@ public class SignInCommand implements Command {
                 }
             } else {
                 router = new Router(PagePath.SIGN_IN_PAGE);
-                request.setAttribute(MSG_ATTRIBUTE, "Incorrect password or login");
+                request.setAttribute(MSG_ATTRIBUTE, bundle.getString(INCORRECT_LOGIN_OR_PASSWORD));
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

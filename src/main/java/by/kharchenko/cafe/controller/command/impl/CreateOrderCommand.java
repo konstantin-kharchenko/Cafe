@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.*;
 import static by.kharchenko.cafe.controller.RequestAttribute.PAYMENT_TYPE_ATTRIBUTE;
@@ -26,6 +28,7 @@ public class CreateOrderCommand implements Command {
         Router router = null;
         try {
             HttpSession session = request.getSession();
+            ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale((String) session.getValue(LANGUAGE_ATTRIBUTE)));
             User user = (User) session.getValue(USER_ATTRIBUTE);
             Map<String, String> orderData = new HashMap<>();
             orderData.put(NAME, request.getParameter(NAME_ATTRIBUTE));
@@ -35,12 +38,12 @@ public class CreateOrderCommand implements Command {
             orderData.put(EMAIL, user.getEmail());
             boolean match = OrderServiceImpl.getInstance().add(orderData);
             if (match) {
-                session.setAttribute(MSG_ATTRIBUTE, "success create order");
+                session.setAttribute(MSG_ATTRIBUTE, bundle.getString(SUCCESS_CREATE_ORDER));
                 router = new Router(PagePath.CLIENT_PAGE, Router.Type.REDIRECT);
                 request.setAttribute(REPEAT_ATTRIBUTE, false);
             } else {
                 if (orderData.get(NAME).equals(NAME_EXISTS)) {
-                    request.setAttribute(MSG_ATTRIBUTE, "order name exists");
+                    request.setAttribute(MSG_ATTRIBUTE, bundle.getString(BUNDLE_NAME_EXISTS));
                     orderData.put(NAME, "");
                 }
                 request.setAttribute(REPEAT_ATTRIBUTE, true);

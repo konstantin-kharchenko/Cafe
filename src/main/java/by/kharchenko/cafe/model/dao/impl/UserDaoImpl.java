@@ -6,6 +6,9 @@ import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.dao.UserDao;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -19,7 +22,7 @@ import java.util.Optional;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class UserDaoImpl implements UserDao, BaseDao<User> {
-
+    private static final Logger logger = LogManager.getLogger(UserDaoImpl.class);
     private static final UserDaoImpl instance = new UserDaoImpl();
 
     private UserDaoImpl() {
@@ -74,7 +77,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                                     connection.commit();
                                     return true;
                                 } else {
-                                    throw new SQLException("failed to add in clients table");
+                                    throw new DaoException("failed to add in clients table");
                                 }
                             }
                         } else if (Objects.equals(userData.get(ROLE), User.Role.ADMINISTRATOR.toString().toLowerCase())) {
@@ -85,27 +88,28 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                                     connection.commit();
                                     return true;
                                 } else {
-                                    throw new SQLException("failed to add in administrators table");
+                                    throw new DaoException("failed to add in administrators table");
                                 }
                             }
                         }
                     }
                 }
             } else {
-                throw new SQLException("failed to add in users table");
+                throw new DaoException("failed to add in users table");
             }
         } catch (SQLException | ParseException e) {
+            logger.log(Level.ERROR, e);
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                //log todo
+                logger.log(Level.ERROR, e);
             }
             throw new DaoException(e);
         } finally {
             try {
                 connection.close();
             } catch (SQLException e) {
-                //log todo
+                logger.log(Level.ERROR, e);
             }
         }
         return false;
@@ -128,8 +132,9 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
             query = SqlQuery.UPDATE_USER_WHERE_NEW_PHOTO_BY_USER_ID;
             isNewPhoto = true;
         }
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = ConnectionPool.getInstance().getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            connection.setAutoCommit(false);
             statement.setString(1, userData.get(NAME));
             statement.setString(2, userData.get(SURNAME));
             statement.setString(3, userData.get(LOGIN));
@@ -141,12 +146,39 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                 statement.setInt(5, Integer.parseInt(userData.get(ID_USER)));
             }
             if (statement.executeUpdate() != 0) {
-                return true;
+                if (userData.get(ROLE).equals(User.Role.ADMINISTRATOR.toString())) {
+                    try (PreparedStatement updateAdmin = connection.prepareStatement(SqlQuery.UPDATE_ADMINISTRATOR_EXPERIENCE_BY_USER_ID)) {
+                        updateAdmin.setDouble(1, Double.parseDouble(userData.get(EXPERIENCE)));
+                        updateAdmin.setInt(2, Integer.parseInt(userData.get(ID_USER)));
+                        if (updateAdmin.executeUpdate() != 0) {
+                            connection.commit();
+                            return true;
+                        } else {
+                            throw new DaoException("Failed to update user");
+                        }
+                    }
+                } else {
+                    connection.commit();
+                    return true;
+                }
+            } else {
+                throw new DaoException("Failed to update user");
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                logger.log(Level.ERROR, e);
+            }
             throw new DaoException(e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                logger.log(Level.ERROR, e);
+            }
         }
-        return false;
     }
 
     @Override
@@ -162,6 +194,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                 }
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
         return false;
@@ -179,6 +212,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                 }
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
         return role;
@@ -198,6 +232,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                 return id;
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -217,6 +252,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                 return id;
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
@@ -236,10 +272,11 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                     insert.setInt(2, idClient);
                     insert.executeUpdate();
                 } else {
-                    throw new SQLException("failed to find client_account");
+                    throw new DaoException("failed to find client_account");
                 }
             }
         } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }

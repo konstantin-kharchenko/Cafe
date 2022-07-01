@@ -50,14 +50,17 @@
         <h1 class="h3 mb-3 fw-normal"><fmt:message key="login.message" bundle="${lang}"/></h1>
 
         <div class="form-floating">
-            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="login" value="${login}">
+            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="login"
+                   value="${login}">
             <label for="floatingInput"><fmt:message key="login.login" bundle="${lang}"/></label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" value="${password}">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password"
+                   value="${password}">
             <label for="floatingPassword"><fmt:message key="login.password" bundle="${lang}"/></label>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" name="command" value="sign_in"><fmt:message key="login.sign-in" bundle="${lang}"/></button>
+        <button class="w-100 btn btn-lg btn-primary" name="command" value="sign_in"><fmt:message key="login.sign-in"
+                                                                                                 bundle="${lang}"/></button>
         <br/>
         <h1 class="h3 mb-3 fw-normal">${msg}</h1>
     </form>

@@ -6,10 +6,8 @@ import by.kharchenko.cafe.model.dao.UserDao;
 import by.kharchenko.cafe.model.dao.impl.AdministratorDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.ClientDaoImpl;
 import by.kharchenko.cafe.model.dao.impl.UserDaoImpl;
-import by.kharchenko.cafe.model.email.MailThread;
 import by.kharchenko.cafe.model.entity.Administrator;
 import by.kharchenko.cafe.model.entity.Client;
-import by.kharchenko.cafe.model.entity.Ingredient;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.UserService;
@@ -18,16 +16,20 @@ import by.kharchenko.cafe.util.filereadwrite.FileReaderWriter;
 import by.kharchenko.cafe.validator.DataValidator;
 import by.kharchenko.cafe.validator.impl.DataValidatorImpl;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
+import static by.kharchenko.cafe.controller.RequestAttribute.EMPTY;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class UserServiceImpl implements BaseService<User>, UserService {
     private static final String FILE_EXTENSION = ".txt";
     private static final String PHOTO_PATH_ON_HDD = "D:\\FINAL_PROJECT\\PHOTO\\";
+    private static final String MAIL_SUBJECT = "Registration message";
+    private static final String MAIL_TEXT = "you have successfully registration in the 'Cafe' application ";
     private static final UserServiceImpl instance = new UserServiceImpl();
     private final DataValidator validator = DataValidatorImpl.getInstance();
 
@@ -61,8 +63,7 @@ public class UserServiceImpl implements BaseService<User>, UserService {
                     UserDaoImpl userDao = UserDaoImpl.getInstance();
                     boolean match = userDao.add(userData);
                     if (match) {
-                        EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL), "Registration message", "you have successfully registration in the '" +
-                                "Cafe' application ");
+                        EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT);
                     }
                     return match;
                 } else {
@@ -92,7 +93,12 @@ public class UserServiceImpl implements BaseService<User>, UserService {
     @Override
     public boolean update(Map<String, String> userData) throws ServiceException {
         try {
-            boolean isCorrectData = validator.isCorrectUpdateData(userData);
+            boolean isCorrectData;
+            if (userData.get(ROLE).equals(User.Role.ADMINISTRATOR.toString())) {
+                isCorrectData = validator.isCorrectUpdateAdministratorData(userData);
+            } else {
+                isCorrectData = validator.isCorrectUpdateClientData(userData);
+            }
             Integer idUser = Integer.parseInt(userData.get(ID_USER));
             String login = userData.get(LOGIN);
             Optional<Integer> idAnotherUser;
@@ -108,7 +114,7 @@ public class UserServiceImpl implements BaseService<User>, UserService {
                     if (!photoName.equals("") && !isCorrectPhoto) {
                         userData.put(PHOTO, "");
                     } else if (photoName.equals("")) {
-                        userData.put(PHOTO, "Empty");
+                        userData.put(PHOTO, EMPTY);
                     }
                     return false;
                 }
@@ -130,13 +136,13 @@ public class UserServiceImpl implements BaseService<User>, UserService {
                     return UserDaoImpl.getInstance().update(userData);
                 } else {
                     if (photoName.equals("")) {
-                        userData.put(PHOTO, "Empty");
+                        userData.put(PHOTO, EMPTY);
                     }
                     return false;
                 }
             } else {
                 if (photoName.equals("")) {
-                    userData.put(PHOTO, "Empty");
+                    userData.put(PHOTO, EMPTY);
                 }
                 return false;
             }
@@ -172,7 +178,7 @@ public class UserServiceImpl implements BaseService<User>, UserService {
     }
 
     @Override
-    public Optional<? extends User> findUserByLogin(String login, User.Role role) throws ServiceException {
+    public Optional<? extends User> findUserByLoginAndRole(String login, User.Role role) throws ServiceException {
         try {
             Optional<Integer> userId = UserDaoImpl.getInstance().findIdUserByLogin(login);
             if (userId.isPresent()) {

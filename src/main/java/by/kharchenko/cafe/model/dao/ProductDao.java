@@ -5,6 +5,7 @@ import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.Product;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ProductDao {
@@ -21,4 +22,16 @@ public interface ProductDao {
     List<Integer> findProductsIdByOrderId(int idOrder) throws DaoException;
 
     Optional<Product> findProductByProductId(int parseInt) throws DaoException;
+
+    Optional<Product> findProductByName(String name) throws DaoException;
+
+    Optional<Integer> findIdProductByName(String name) throws DaoException;
+
+    Optional<Integer> findIdProductByNameAndNotId(String name, Integer idProduct) throws DaoException;
+
+    void deleteIngredientFromProduct(int idIngredient, int idProduct) throws DaoException;
+
+    void changeGrams(Map<String, String> data) throws DaoException;
+
+    boolean addIngredientsIdInProductsIngredientsTableByIdProduct(int idProduct, List<Integer> idList) throws DaoException;
 }

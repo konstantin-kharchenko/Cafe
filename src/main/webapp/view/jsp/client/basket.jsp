@@ -12,7 +12,8 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>${user.getLogin()}</title>
+    <title><fmt:message key="client.basket"
+                        bundle="${lang}"/></title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
     <link href="${abs}/view/css/bootstrap.min.css" rel="stylesheet">
@@ -56,13 +57,19 @@
             <div class="col pb-3">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Name: ${product.name}</h5>
-                        <p class="card-text">Date: ${product.date}</p>
-                        <h5 class="card-title">Price: ${product.price}</h5>
+                        <h5 class="card-title"><fmt:message key="product.name"
+                                                            bundle="${lang}"/>: ${product.name}</h5>
+                        <p class="card-text"><fmt:message key="product.date"
+                                                          bundle="${lang}"/>: ${product.date}</p>
+                        <h5 class="card-title"><fmt:message key="product.price"
+                                                            bundle="${lang}"/>: ${product.price} <fmt:message key="byn"
+                                                                                                              bundle="${lang}"/>.</h5>
                         <a href="${abs}/controller?command=delete_product_from_basket&id_product=${product.idProduct}"
-                           class="btn btn-primary">Delete</a>
+                           class="btn btn-primary"><fmt:message key="product.delete"
+                                                                bundle="${lang}"/></a>
                         <a href="${abs}/controller?command=go_product_page&id_product=${product.idProduct}"
-                           class="btn btn-primary">Show more</a>
+                           class="btn btn-primary"><fmt:message key="product.show.more"
+                                                                bundle="${lang}"/></a>
                     </div>
                 </div>
             </div>

@@ -59,7 +59,8 @@
                 <fmt:message key="language.english" bundle="${lang}"/>
             </label>
         </div>
-        <button class="btn btn-primary" name="command" value="change_language"><fmt:message key="language.save" bundle="${lang}"/></button>
+        <button class="btn btn-primary" name="command" value="change_language"><fmt:message key="language.save"
+                                                                                            bundle="${lang}"/></button>
 
     </form>
 </main>

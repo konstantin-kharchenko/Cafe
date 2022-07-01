@@ -32,5 +32,8 @@ public interface DataValidator {
     boolean isCorrectPhoto(String photo);
 
     boolean isCorrectRegisterData(Map<String, String> userData);
-    boolean isCorrectUpdateData(Map<String, String> userData);
+
+    boolean isCorrectUpdateClientData(Map<String, String> userData);
+
+    boolean isCorrectUpdateAdministratorData(Map<String, String> userData);
 }

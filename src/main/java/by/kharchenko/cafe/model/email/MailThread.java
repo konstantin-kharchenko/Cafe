@@ -1,5 +1,6 @@
 package by.kharchenko.cafe.model.email;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,33 +31,26 @@ public class MailThread extends Thread {
     }
 
     private void init() {
-// объект почтовой сессии
         Session mailSession = (new SessionCreator(properties)).createSession();
         mailSession.setDebug(true);
-// создание объекта почтового сообщения
         message = new MimeMessage(mailSession);
         try {
-// загрузка параметров в объект почтового сообщения
             message.setSubject(mailSubject);
             message.setContent(mailText, "text/html");
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(sendToEmail));
         } catch (AddressException e) {
-            System.err.print("Некорректный адрес:" + sendToEmail + " " + e);
-// in log file
+            logger.log(Level.ERROR, "Некорректный адрес:" + sendToEmail + " " + e);
         } catch (MessagingException e) {
-            System.err.print("Ошибка формирования сообщения" + e);
-// in log file
+            logger.log(Level.ERROR, "Ошибка формирования сообщения" + e);
         }
     }
 
     public void run() {
         init();
         try {
-// отправка почтового сообщения
             Transport.send(message);
         } catch (MessagingException e) {
-            System.err.print("Ошибка при отправлении сообщения" + e);
-// in log file
+            logger.log(Level.ERROR, "Ошибка при отправлении сообщения" + e);
         }
     }
 }

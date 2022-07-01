@@ -1,5 +1,9 @@
 package by.kharchenko.cafe.model.pool;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -12,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ConnectionPool {
+    private static final Logger logger = LogManager.getLogger(ConnectionPool.class);
     private static final ReentrantLock lock = new ReentrantLock(true);
     private static final int CAPACITY = 10;
     private static final AtomicBoolean isCreate = new AtomicBoolean(false);
@@ -26,7 +31,7 @@ public class ConnectionPool {
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
         } catch (SQLException e) {
-            //log
+            logger.log(Level.ERROR, e);
             throw new ExceptionInInitializerError(e);
         }
         ClassLoader classLoader = ConnectionPool.class.getClassLoader();
@@ -36,7 +41,7 @@ public class ConnectionPool {
             fileInputStream = classLoader.getResourceAsStream(PROPERTIES_PATH);
             properties.load(fileInputStream);
         } catch (IOException e) {
-            //log
+            logger.log(Level.ERROR, e);
             throw new ExceptionInInitializerError(e);
         }
     }
@@ -63,6 +68,7 @@ public class ConnectionPool {
                 free.add(new ProxyConnection(connection));
             }
         } catch (SQLException e) {
+            logger.log(Level.FATAL, e);
             throw new RuntimeException(e);
         }
     }
@@ -73,7 +79,7 @@ public class ConnectionPool {
             connection = free.take();
             used.put(connection);
         } catch (InterruptedException e) {
-            //log
+            logger.log(Level.ERROR, e);
             Thread.currentThread().interrupt();
         }
         return connection;
@@ -87,7 +93,7 @@ public class ConnectionPool {
                 try {
                     free.put((ProxyConnection) connection);
                 } catch (InterruptedException e) {
-                    //log
+                    logger.log(Level.ERROR, e);
                     Thread.currentThread().interrupt();
                 }
             }
@@ -99,7 +105,7 @@ public class ConnectionPool {
         try {
             DriverManager.deregisterDriver(DriverManager.getDriver(properties.getProperty(URL)));
         } catch (SQLException e) {
-            //log
+            logger.log(Level.INFO, e);
         }
     }
 
@@ -108,7 +114,8 @@ public class ConnectionPool {
             try {
                 free.take().close();
             } catch (SQLException | InterruptedException e) {
-                //log //todo
+                logger.log(Level.INFO, e);
+                Thread.currentThread().interrupt();
             }
         }
     }

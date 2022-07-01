@@ -97,7 +97,8 @@
             <input type="date" class="form-control" id="date" name="birthday" max="2002.01.01"
                    value="${user.get("birthday")}" required>
             <label for="floatingSurname"><fmt:message key="registration.birthday" bundle="${lang}"/></label>
-        </div><label id="labelAge"></label>
+        </div>
+        <label id="labelAge"></label>
         <div class="form-floating">
             <input type="text" class="form-control" id="floatingInput" required placeholder="name@example.com"
                    name="login" value="${user.get("login")}"/>
@@ -110,7 +111,8 @@
             <label for="floatingPassword"><fmt:message key="registration.password" bundle="${lang}"/></label>
         </div>
         <label id="labelPassword"></label>
-        <button class="w-100 btn btn-lg btn-primary" name="command" value="registration"><fmt:message key="registration.sign_up" bundle="${lang}"/></button>
+        <button class="w-100 btn btn-lg btn-primary" name="command" value="registration"><fmt:message
+                key="registration.sign_up" bundle="${lang}"/></button>
         <br/>
         <p class="mt-5 mb-3 text-muted">${msg}</p>
     </form>

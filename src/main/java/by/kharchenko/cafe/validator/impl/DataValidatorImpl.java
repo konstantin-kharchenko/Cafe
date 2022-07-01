@@ -31,7 +31,7 @@ public class DataValidatorImpl implements DataValidator {
     private static final String ROLE_REGEX = "(client)|(administrator)";
     private static final String STATUS_REGEX = "(accepted)|(waiting)|(declined)";
     private static final String LOYALTY_POINTS_REGEX = "[0-9]{1,2}";
-    private static final String EXPERIENCE_REGEX = "[0-9]{1,2}";
+    private static final String EXPERIENCE_REGEX = "[0-9]{1,2}.[0-9]{1,2}";
     private static final String IS_BLOCK_REGEX = "(true)|(false)";
     private static final String PHOTO_REGEX = "^.+(.jpg)|(.jpeg)|(.raw)|(.png)$";
 
@@ -58,7 +58,7 @@ public class DataValidatorImpl implements DataValidator {
         LocalDate localDate = LocalDate.parse(age);
         LocalDate end = LocalDate.now();
         long years = ChronoUnit.YEARS.between(localDate, end);
-        return  years > 11;
+        return years > 11;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class DataValidatorImpl implements DataValidator {
     }
 
     @Override
-    public boolean isCorrectUpdateData(Map<String, String> userData) {
+    public boolean isCorrectUpdateClientData(Map<String, String> userData) {
         boolean isCorrectData = true;
         if (!isCorrectName(userData.get(NAME))) {
             isCorrectData = false;
@@ -170,4 +170,32 @@ public class DataValidatorImpl implements DataValidator {
         }
         return isCorrectData;
     }
+
+    @Override
+    public boolean isCorrectUpdateAdministratorData(Map<String, String> userData) {
+        boolean isCorrectData = true;
+        if (!isCorrectName(userData.get(NAME))) {
+            isCorrectData = false;
+            userData.put(NAME, "");
+        }
+        if (!isCorrectSurname(userData.get(SURNAME))) {
+            isCorrectData = false;
+            userData.put(SURNAME, "");
+        }
+        if (!isCorrectLogin(userData.get(LOGIN))) {
+            isCorrectData = false;
+            userData.put(LOGIN, "");
+        }
+        if (!isCorrectPhone(userData.get(PHONE_NUMBER))) {
+            isCorrectData = false;
+            userData.put(PHONE_NUMBER, "");
+        }
+        if (!isCorrectExperience(userData.get(EXPERIENCE))) {
+            isCorrectData = false;
+            userData.put(EXPERIENCE, "");
+        }
+        return isCorrectData;
+    }
+
+
 }

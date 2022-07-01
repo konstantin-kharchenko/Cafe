@@ -33,6 +33,7 @@
                 font-size: 3.5rem;
             }
         }
+
         .body {
             display: flex;
             align-items: center;
@@ -40,6 +41,7 @@
             padding-bottom: 80px;
             background-color: #f5f5f5;
         }
+
         .form-signin {
             width: 100%;
             max-width: 330px;
@@ -104,7 +106,8 @@
                 <input type="text" class="form-control" id="floatingName" placeholder="name@example.com" name="name"
                        value="${order.get("name")}">
                 <label for="floatingName"><fmt:message key="create_order.name" bundle="${lang}"/></label>
-            </div><label id="labelName"></label>
+            </div>
+            <label id="labelName"></label>
             <div class="form-floating">
                 <input type="date" class="form-control" id="date" name="date" max="2002.01.01"
                        value="${order.get("date")}" required>

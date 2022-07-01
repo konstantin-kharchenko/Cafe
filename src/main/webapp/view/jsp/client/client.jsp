@@ -61,7 +61,7 @@
                 <li><a href="${abs}/controller?command=go_all_orders_page" class="nav-link px-2 link-dark"><fmt:message
                         key="client.all_orders" bundle="${lang}"/></a>
                 </li>
-                <li><a href="${abs}/controller?command=go_client_all_products&currentPage=1"
+                <li><a href="${abs}/controller?command=go_all_products&currentPage=1"
                        class="nav-link px-2 link-dark"><fmt:message
                         key="client.menu" bundle="${lang}"/></a></li>
                 <li>
@@ -70,7 +70,7 @@
                 </li>
                 <li>
                     <a href="${abs}/controller?command=go_basket_page"
-                       class="nav-link px-2 link-dark">Карзина
+                       class="nav-link px-2 link-dark"><fmt:message key="client.basket" bundle="${lang}"/>
                         <c:choose>
                             <c:when test="${basket_products.size() > 0}">
                                 +${basket_products.size()}
@@ -85,12 +85,14 @@
                 </li>
             </ul>
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><h1 class="h3 mb-3 fw-normal">Клиентский счет: ${user.clientAccount}</h1>
+                <li><h1 class="h3 mb-3 fw-normal"><fmt:message key="client.account"
+                                                               bundle="${lang}"/>: ${user.clientAccount}</h1>
                 </li>
             </ul>
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <a href="${abs}/controller?command=go_refill_page"
-                   class="btn btn-primary">Пополнить клиентский счет</a>
+                   class="btn btn-primary"><fmt:message key="client.add.client.account"
+                                                        bundle="${lang}"/></a>
             </ul>
             <div class="dropdown text-end">
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
@@ -130,7 +132,7 @@
                                             <div class="d-flex w-100 justify-content-between">
                                                 <h5 class="mb-1"><c:out value="${order.getName()}"/></h5>
                                                 <small><c:out value="${order.getDate()}"/>
-                                                <br/>
+                                                    <br/>
                                                     <h5><c:out value="${order.price}"/> руб.</h5>
                                                 </small>
                                             </div>
@@ -167,13 +169,18 @@
                         <c:forEach items="${products}" var="product">
                             <div class="card" style="width: 25rem;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Name: ${product.name}</h5>
-                                    <p class="card-text">Date: ${product.date}</p>
-                                    <h5 class="card-title">Price: ${product.price}</h5>
+                                    <h5 class="card-title"><fmt:message key="product.name"
+                                                                        bundle="${lang}"/>: ${product.name}</h5>
+                                    <p class="card-text"><fmt:message key="product.date"
+                                                                      bundle="${lang}"/>: ${product.date}</p>
+                                    <h5 class="card-title"><fmt:message key="product.price"
+                                                                        bundle="${lang}"/>: ${product.price}</h5>
                                     <a href="${abs}/controller?command=add_product_in_basket&return_page=view/jsp/client/client.jsp&id_product=${product.idProduct}&name=${product.name}&date=${product.date}&price=${product.price}"
-                                       class="btn btn-primary">Add to basket</a>
+                                       class="btn btn-primary"><fmt:message key="product.add.basket"
+                                                                            bundle="${lang}"/></a>
                                     <a href="${abs}/controller?command=go_product_page&id_product=${product.idProduct}"
-                                       class="btn btn-primary">Show more</a>
+                                       class="btn btn-primary"><fmt:message key="product.show.more"
+                                                                            bundle="${lang}"/></a>
                                 </div>
                             </div>
                             <br/>

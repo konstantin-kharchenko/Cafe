@@ -13,6 +13,8 @@ import static by.kharchenko.cafe.controller.RequestParameter.DATE;
 
 public class OrderValidatorImpl implements OrderValidator {
     private static final OrderValidatorImpl instance = new OrderValidatorImpl();
+    private static final String PAYMENT_TYPE_REGEX = "(CASH)|(CLIENT_ACCOUNT)";
+    private static final String NAME_REGEX = "^[А-Яа-яA-Za-z0-9-_\\s]{3,}$";
 
     private OrderValidatorImpl() {
     }
@@ -21,8 +23,6 @@ public class OrderValidatorImpl implements OrderValidator {
         return instance;
     }
 
-    private static final String PAYMENT_TYPE_REGEX = "(CASH)|(CLIENT_ACCOUNT)";
-    private static final String NAME_REGEX = "^[А-Яа-яA-Za-z0-9-_\\s]{3,}$";
 
     @Override
     public boolean isCorrectPaymentType(String paymentType) {

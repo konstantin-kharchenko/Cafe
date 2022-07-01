@@ -1,6 +1,5 @@
 package by.kharchenko.cafe.model.service;
 
-import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.exception.ServiceException;
 import by.kharchenko.cafe.model.entity.User;
 
@@ -14,11 +13,12 @@ public interface UserService {
 
     User.Role findUserRoleByLogin(String login) throws ServiceException;
 
-    Optional<? extends User> findUserByLogin(String login, User.Role role) throws ServiceException;
+    Optional<? extends User> findUserByLoginAndRole(String login, User.Role role) throws ServiceException;
 
     List<String> findLogins() throws ServiceException;
 
     String findStringPhotoByStringPath(String stringPath) throws ServiceException;
 
     void refill(BigDecimal refill, Integer idClient) throws ServiceException;
+
 }

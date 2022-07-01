@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>${user.getLogin()}</title>
+    <title>${order.name}</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
     <link href="${abs}/view/css/bootstrap.min.css" rel="stylesheet">
@@ -57,7 +57,7 @@
             <div class="row row-cols-2">
                 <div>
                     <article>
-                        <h1 class="h3 mb-3 fw-normal">Заказ: ${order.name}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="order" bundle="${lang}"/>: ${order.name}</h1>
                         <div class="container text-center">
                             <aside>
                                 <div class="list-group">
@@ -66,7 +66,8 @@
                                             <div class="d-flex w-100 justify-content-between">
                                                 <h5 class="mb-1"><c:out value="${product.getName()}"/></h5>
                                                 <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                                                    <img class="rounded-circle mt-5" width="50px" src="data:image/png;base64,${product.stringPhoto}">
+                                                    <img class="rounded-circle mt-5" width="50px"
+                                                         src="data:image/png;base64,${product.stringPhoto}">
                                                 </div>
                                                 <small>
                                                     <c:out value="${product.getDate()}"/>
@@ -76,15 +77,17 @@
                                             <p class="mb-1">
                                                 <c:forEach var="ingredient" items="${product.ingredients}">
                                                     <c:out value="${ingredient.getName()}"/>: <c:out
-                                                        value="${ingredient.getGrams()}"/> grams
+                                                        value="${ingredient.getGrams()}"/> <fmt:message key="grams"
+                                                                                                        bundle="${lang}"/>
                                                     <br/>
                                                 </c:forEach>
                                             </p>
                                             <small>
-                                                    ${product.price} руб.
+                                                    ${product.price} <fmt:message key="byn" bundle="${lang}"/>.
                                             </small>
                                             <a href="${abs}/controller?command=delete_product_from_order&id_product=${product.idProduct}&id_order=${order.idOrder}"
-                                               class="btn btn-primary">Удалить продукт
+                                               class="btn btn-primary"><fmt:message key="delete.product"
+                                                                                    bundle="${lang}"/>
                                             </a>
                                         </a>
                                         <br/>
@@ -101,14 +104,24 @@
                 <div>
                     <br/><br/>
                     <a class="list-group-item list-group-item-action flex-column align-items-start border border-primary">
-                        <h1 class="h3 mb-3 fw-normal">Дата получения: ${order.date}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="get.date" bundle="${lang}"/>: ${order.date}</h1>
                         <br/>
-                        <h1 class="h3 mb-3 fw-normal">Цена: ${order.price} руб.</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="product.price"
+                                                                   bundle="${lang}"/>: ${order.price} руб.</h1>
                         <br/>
-                        <h1 class="h3 mb-3 fw-normal">Вид оплаты: ${order.paymentType}</h1>
+                        <h1 class="h3 mb-3 fw-normal"><fmt:message key="payment.type" bundle="${lang}"/>:
+                            <c:choose>
+                                <c:when test="${order.paymentType.toString() == 'CASH'}">
+                                    <fmt:message key="cash" bundle="${lang}"/>
+                                </c:when>
+                                <c:when test="${order.paymentType.toString() == 'CLIENT_ACCOUNT'}">
+                                    <fmt:message key="client.account" bundle="${lang}"/>
+                                </c:when>
+                            </c:choose>
+                        </h1>
                         <button class="w-25 btn btn-lg btn-primary m-1" name="command"
                                 value="go_change_order_page">
-                            Изменить
+                            <fmt:message key="order.change" bundle="${lang}"/>
                         </button>
                         <br/>
                     </a>
@@ -117,11 +130,11 @@
                         <br/>
                         <button class="w-25 btn btn-lg btn-primary m-1" name="command"
                                 value="delete_order">
-                            Удалить заказ
+                            <fmt:message key="delete.order" bundle="${lang}"/>
                         </button>
                         <br/>
                         <button class="w-25 btn btn-lg btn-primary m-1" name="command" value="add_from_basket">
-                            Добавить из карзины
+                            <fmt:message key="add.from.basket" bundle="${lang}"/>
                         </button>
                     </aside>
                 </div>

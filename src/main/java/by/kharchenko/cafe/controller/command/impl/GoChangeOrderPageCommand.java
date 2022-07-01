@@ -34,8 +34,7 @@ public class GoChangeOrderPageCommand implements Command {
                 request.setAttribute(ID_ORDER_ATTRIBUTE, idOrder);
                 request.setAttribute(REPEAT_ATTRIBUTE, true);
                 return new Router(PagePath.CHANGE_ORDER_PAGE);
-            }
-            else {
+            } else {
                 HttpSession session = request.getSession();
                 String userPage = (String) session.getValue(USER_PAGE);
                 return new Router(userPage, Router.Type.REDIRECT);

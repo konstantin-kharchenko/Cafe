@@ -48,8 +48,10 @@
              height="57">
         <h1 class="h3 mb-3 fw-normal"><fmt:message key="exit.message" bundle="${lang}"/></h1>
         <div>
-            <button class="btn btn-primary" name="command" value="logout"><fmt:message key="exit.yes" bundle="${lang}"/></button>
-            <button class="btn btn-primary" name="command" value="go_user_page"><fmt:message key="exit.no" bundle="${lang}"/></button>
+            <button class="btn btn-primary" name="command" value="logout"><fmt:message key="exit.yes"
+                                                                                       bundle="${lang}"/></button>
+            <button class="btn btn-primary" name="command" value="go_user_page"><fmt:message key="exit.no"
+                                                                                             bundle="${lang}"/></button>
         </div>
     </form>
 </main>

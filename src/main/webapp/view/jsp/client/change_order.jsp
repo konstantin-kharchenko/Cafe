@@ -33,6 +33,7 @@
                 font-size: 3.5rem;
             }
         }
+
         .body {
             display: flex;
             align-items: center;
@@ -40,6 +41,7 @@
             padding-bottom: 80px;
             background-color: #f5f5f5;
         }
+
         .form-signin {
             width: 100%;
             max-width: 330px;
@@ -104,7 +106,8 @@
                 <input type="text" class="form-control" id="floatingName" placeholder="name@example.com" name="name"
                        value="${order.get("name")}">
                 <label for="floatingName"><fmt:message key="create_order.name" bundle="${lang}"/></label>
-            </div><label id="labelName"></label>
+            </div>
+            <label id="labelName"></label>
             <div class="form-floating">
                 <input type="date" class="form-control" id="date" name="date" max="2002.01.01"
                        value="${order.get("date")}" required>
@@ -112,7 +115,7 @@
             </div>
             <label id="labelDate"></label>
             <button class="w-100 btn btn-lg btn-primary" name="command" value="change_order">
-                Изменить
+                <fmt:message key="order.change" bundle="${lang}"/>
             </button>
             <br/>
             <p class="mt-5 mb-3 text-muted">${msg}</p>

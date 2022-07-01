@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class IngredientMapper implements CustomRowMapper<Ingredient> {
@@ -30,7 +29,8 @@ public class IngredientMapper implements CustomRowMapper<Ingredient> {
             ingredient.setIdIngredient(resultSet.getInt(RequestParameter.ID_INGREDIENT));
             ingredient.setName(resultSet.getString(RequestParameter.NAME));
             ingredient.setShelfLife(resultSet.getDate(RequestParameter.SHELF_LIFE).toLocalDate());
-            logger.log(Level.INFO, "ingredient " + ingredient.getName() + " added");
+            ingredient.setBlock(resultSet.getBoolean(RequestParameter.BLOCK));
+            logger.log(Level.INFO, ingredient.getName());
         } catch (SQLException e) {
             throw new DaoException(e);
         }

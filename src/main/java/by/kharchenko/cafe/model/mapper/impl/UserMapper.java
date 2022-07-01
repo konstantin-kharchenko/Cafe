@@ -4,11 +4,8 @@ import by.kharchenko.cafe.controller.RequestParameter;
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.mapper.CustomRowMapper;
-import by.kharchenko.cafe.util.encryption.CustomPictureEncoder;
 import org.apache.logging.log4j.Level;
 
-import java.io.IOException;
-import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -44,7 +41,7 @@ public class UserMapper implements CustomRowMapper<User> {
             user.setPhoneNumber(resultSet.getString(RequestParameter.PHONE_NUMBER));
             user.setRole(User.Role.valueOf(resultSet.getString(RequestParameter.ROLE).toUpperCase()));
             user.setPhotoPath(resultSet.getString(PHOTO));
-            logger.log(Level.INFO, "user added");
+            logger.log(Level.INFO, user.getName());
         } catch (SQLException | ParseException e) {
             throw new DaoException(e);
         }

@@ -2,7 +2,7 @@ package by.kharchenko.cafe.model.entity;
 
 import java.util.Objects;
 
-public class Administrator extends User{
+public class Administrator extends User {
     private int idAdministrator;
     private double experience;
     private Status status;

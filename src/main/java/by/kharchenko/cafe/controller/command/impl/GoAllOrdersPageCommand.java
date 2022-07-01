@@ -24,7 +24,7 @@ public class GoAllOrdersPageCommand implements Command {
         HttpSession session = request.getSession();
         User user = (User) session.getValue(USER_ATTRIBUTE);
         try {
-            List<Order> orders = OrderServiceImpl.getInstance().findOrdersByIdClient(((Client)user).getIdClient());
+            List<Order> orders = OrderServiceImpl.getInstance().findOrdersByIdClient(((Client) user).getIdClient());
             request.setAttribute(ORDERS_ATTRIBUTE, orders);
             return new Router(PagePath.ALL_ORDERS_PAGE);
         } catch (ServiceException e) {

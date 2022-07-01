@@ -18,6 +18,7 @@ public class EmailServiceImpl implements EmailService {
     public static EmailServiceImpl getInstance() {
         return instance;
     }
+
     @Override
     public boolean sendMail(String mail, String mailSubject, String mailText) throws ServiceException {
         Properties properties = null;
@@ -31,7 +32,6 @@ public class EmailServiceImpl implements EmailService {
                     new MailThread(mail, mailSubject, mailText, properties);
             mailOperator.start();
         } catch (IOException e) {
-            //log
             throw new ServiceException(e);
         }
         return false;

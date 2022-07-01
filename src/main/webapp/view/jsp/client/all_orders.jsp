@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Menu</title>
+    <title><fmt:message key="client.all_orders" bundle="${lang}"/></title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
     <link href="${abs}/view/css/bootstrap.min.css" rel="stylesheet">
@@ -50,7 +50,7 @@
                                 <h5 class="mb-1"><c:out value="${order.getName()}"/></h5>
                                 <small><c:out value="${order.getDate()}"/>
                                     <br/>
-                                    <h5><c:out value="${order.price}"/> руб.</h5>
+                                    <h5><c:out value="${order.price}"/> <fmt:message key="byn" bundle="${lang}"/>.</h5>
                                 </small>
                             </div>
                             <p class="mb-1">

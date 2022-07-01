@@ -12,32 +12,35 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
-import static by.kharchenko.cafe.controller.RequestAttribute.PRODUCTS_ATTRIBUTE;
+import static by.kharchenko.cafe.controller.RequestAttribute.*;
 
-public class GoClientAllProductsCommand implements Command {
+public class GoAllProductsPageCommand implements Command {
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
-        int currentPage = Integer.parseInt(request.getParameter("currentPage"));
+        int currentPage = Integer.parseInt(request.getParameter(CURRENT_PAGE));
         int pageCount = 0;
         try {
             List<Product> products = ProductServiceImpl.getInstance().findProductsByPageNumber(currentPage);
-            pageCount = (int) Math.ceil((1.0*ProductServiceImpl.getInstance().countProducts())/10);
-            if (currentPage == 1) {
-                request.setAttribute("firstPage", true);
-                request.setAttribute("lastPage", false);
+            pageCount = (int) Math.ceil((1.0 * ProductServiceImpl.getInstance().countProducts()) / 10);
+            if (pageCount == 1) {
+                request.setAttribute(FIRST_PAGE, true);
+                request.setAttribute(LAST_PAGE, true);
             } else if (currentPage == pageCount) {
-                request.setAttribute("lastPage", true);
-                request.setAttribute("firstPage", false);
+                request.setAttribute(FIRST_PAGE, true);
+                request.setAttribute(LAST_PAGE, false);
+            } else if (currentPage == 1) {
+                request.setAttribute(FIRST_PAGE, true);
+                request.setAttribute(LAST_PAGE, false);
             } else {
-                request.setAttribute("page.lastPage", false);
-                request.setAttribute("page.firstPage", false);
+                request.setAttribute(FIRST_PAGE, false);
+                request.setAttribute(LAST_PAGE, false);
             }
-            request.setAttribute("pageCount", pageCount);
-            request.setAttribute("currentPage", currentPage);
+            request.setAttribute(COUNT_PAGE, pageCount);
+            request.setAttribute(CURRENT_PAGE, currentPage);
             request.setAttribute(PRODUCTS_ATTRIBUTE, products);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        return new Router(PagePath.CLIENT_ALL_PRODUCTS_PAGE, Router.Type.FORWARD);
+        return new Router(PagePath.ALL_PRODUCTS_PAGE, Router.Type.FORWARD);
     }
 }

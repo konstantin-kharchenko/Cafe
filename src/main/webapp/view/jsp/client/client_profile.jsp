@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title><fmt:message key="exit.name" bundle="${lang}"/></title>
+    <title><fmt:message key="profile.settings" bundle="${lang}"/></title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
 
@@ -80,7 +80,8 @@
                     <img class="rounded-circle mt-5" width="150px" src="data:image/png;base64,${photo}">
                     <br/>
                     <label class="input-file">
-                        <h1 class="h6">Выберите файл</h1>
+                        <h1 class="h6"><fmt:message key="choose.file"
+                                                    bundle="${lang}"/></h1>
                         <input type="file" name="photo" value="photo" onchange="reload()"/>
                     </label>
                 </div>
@@ -88,37 +89,47 @@
             <div class="col-md-5 border-right">
                 <div class="p-3 py-5">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="text-right">Profile Settings</h4>
+                        <h4 class="text-right"><fmt:message key="profile.settings"
+                                                            bundle="${lang}"/></h4>
                     </div>
                     <div class="row mt-2">
-                        <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control"
-                                                                                       placeholder="first name"
-                                                                                       name="name"
-                                                                                       value="${user.getName()}"></div>
-                        <div class="col-md-6"><label class="labels">Surname</label><input type="text"
-                                                                                          class="form-control"
-                                                                                          name="surname"
-                                                                                          value="${user.getSurname()}"
-                                                                                          placeholder="surname"></div>
+                        <div class="col-md-6"><label class="labels"><fmt:message key="profile.name"
+                                                                                 bundle="${lang}"/></label><input
+                                type="text" class="form-control"
+                                placeholder="first name"
+                                name="name"
+                                value="${user.getName()}"></div>
+                        <div class="col-md-6"><label class="labels"><fmt:message key="profile.surname"
+                                                                                 bundle="${lang}"/></label><input
+                                type="text"
+                                class="form-control"
+                                name="surname"
+                                value="${user.getSurname()}"
+                                placeholder="surname"></div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">Phone Number</label><input type="text"
-                                                                                                name="phone_number"
-                                                                                                class="form-control"
-                                                                                                placeholder="enter phone number"
-                                                                                                value="${user.getPhoneNumber()}">
+                        <div class="col-md-12"><label class="labels"><fmt:message key="profile.phone.number"
+                                                                                  bundle="${lang}"/></label><input
+                                type="text"
+                                name="phone_number"
+                                class="form-control"
+                                placeholder="enter phone number"
+                                value="${user.getPhoneNumber()}">
                         </div>
-                        <div class="col-md-12"><label class="labels">Login</label><input type="text"
-                                                                                         class="form-control"
-                                                                                         name="login"
-                                                                                         placeholder="enter address line 1"
-                                                                                         value="${user.getLogin()}">
+                        <div class="col-md-12"><label class="labels"><fmt:message key="profile.login"
+                                                                                  bundle="${lang}"/></label><input
+                                type="text"
+                                class="form-control"
+                                name="login"
+                                placeholder="enter address line 1"
+                                value="${user.getLogin()}">
                         </div>
 
                     </div>
                     <div class="mt-5 text-center">
-                        <input type="hidden" name="from_page" value="view/jsp/client/client_profile.jsp">
-                        <button class="w-100 btn btn-lg btn-primary" name="command" value="update_user">Save Profile
+                        <button class="w-100 btn btn-lg btn-primary" name="command" value="update_client"><fmt:message
+                                key="profile.save"
+                                bundle="${lang}"/>
                         </button>
                     </div>
                     <p class="mt-5 mb-3 text-muted">${msg}</p>
@@ -130,8 +141,11 @@
                         <li><h1 class="h3 mb-3 fw-normal"><fmt:message key="client.loyalty_points"
                                                                        bundle="${lang}"/>: ${user.getLoyaltyPoints()}</h1>
                         </li>
-                        <li><h1 class="h3 mb-3 fw-normal">Клиентский счет: ${user.getClientAccount()}</h1></li>
-                        <li><h1 class="h3 mb-3 fw-normal">Email: ${user.getEmail()}</h1></li>
+                        <li><h1 class="h3 mb-3 fw-normal"><fmt:message key="client.account"
+                                                                       bundle="${lang}"/>: ${user.getClientAccount()}</h1>
+                        </li>
+                        <li><h1 class="h3 mb-3 fw-normal"><fmt:message key="profile.email"
+                                                                       bundle="${lang}"/>: ${user.getEmail()}</h1></li>
                     </ul>
                 </div>
             </div>

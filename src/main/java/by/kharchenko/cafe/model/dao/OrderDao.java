@@ -2,9 +2,8 @@ package by.kharchenko.cafe.model.dao;
 
 import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.entity.Order;
-import by.kharchenko.cafe.model.entity.Product;
-import com.oracle.wls.shaded.org.apache.bcel.generic.INEG;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +21,10 @@ public interface OrderDao {
     boolean addProductsIdInOrdersProductsTableByIdOrder(Integer idOrder, List<Integer> idList) throws DaoException;
 
     Optional<Integer> findIdOrderByIdAndNameAndNoIdOrder(String s, Integer idClient, Integer idOrder) throws DaoException;
+
+    List<Order> findTodayOrders() throws DaoException;
+
+    BigDecimal priceByOrderId(int idOrder) throws DaoException;
+
+    Order.PaymentType paymentTypeByOrderId(int idOrder) throws DaoException;
 }
