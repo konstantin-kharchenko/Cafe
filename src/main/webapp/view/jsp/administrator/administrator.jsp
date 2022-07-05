@@ -120,9 +120,9 @@
     </div>
 </header>
 <div class="main">
-    <p class="mt-5 mb-3 text-muted">${msg}</p>
     <div style="margin-left: 1.5%; margin-right: 1.5%">
         <div class="row row-cols-2">
+            <p class="mt-5 mb-3 text-muted">${msg}</p>
             <div>
                 <article>
                     <h1 class="h3 mb-3 fw-normal"><fmt:message key="overdue.orders" bundle="${lang}"/></h1>

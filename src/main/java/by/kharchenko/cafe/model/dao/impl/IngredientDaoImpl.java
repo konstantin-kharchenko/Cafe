@@ -15,11 +15,9 @@ import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
@@ -54,22 +52,20 @@ public class IngredientDaoImpl implements BaseDao<Ingredient>, IngredientDao {
     }
 
     @Override
-    public boolean add(Map<String, String> ingredientData) throws DaoException {
+    public boolean add(Ingredient ingredientData) throws DaoException {
         int result;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_INGREDIENT)) {
-            java.util.Date utilDate = format.parse(ingredientData.get(SHELF_LIFE));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, ingredientData.get(NAME));
-            statement.setTimestamp(2, timeStamp);
+            statement.setString(1, ingredientData.getName());
+            statement.setDate(2, Date.valueOf(ingredientData.getShelfLife()));
             result = statement.executeUpdate();
             if (result > 0) {
                 return true;
             } else {
                 throw new DaoException("failed to add in ingredients table");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
@@ -81,21 +77,18 @@ public class IngredientDaoImpl implements BaseDao<Ingredient>, IngredientDao {
     }
 
     @Override
-    public boolean update(Map<String, String> data) throws DaoException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    public boolean update(Ingredient ingredientData) throws DaoException {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_INGREDIENT_BY_ID)) {
-            java.util.Date utilDate = format.parse(data.get(SHELF_LIFE));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, data.get(NAME));
-            statement.setTimestamp(2, timeStamp);
-            statement.setInt(3, Integer.parseInt(data.get(ID_INGREDIENT)));
+            statement.setString(1, ingredientData.getName());
+            statement.setDate(2, Date.valueOf(ingredientData.getShelfLife()));
+            statement.setInt(3, ingredientData.getIdIngredient());
             if (statement.executeUpdate() != 0) {
                 return true;
             } else {
                 throw new DaoException("Failed to update ingredient");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }

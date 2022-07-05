@@ -19,7 +19,7 @@ public interface ClientDao {
 
     boolean unlock(int parseInt) throws DaoException;
 
-    void addLoyaltyPoints(int idClient) throws DaoException;
+    boolean addLoyaltyPoints(int idClient) throws DaoException;
 
     void subLoyaltyPoints(int idClient) throws DaoException;
 

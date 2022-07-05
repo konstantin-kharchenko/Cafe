@@ -43,7 +43,7 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     }
 
     @Override
-    public boolean add(Map<String, String> userData) throws DaoException {
+    public boolean add(Client userData) throws DaoException {
         return false;
     }
 
@@ -53,7 +53,7 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     }
 
     @Override
-    public boolean update(Map<String, String> t) throws DaoException {
+    public boolean update(Client t) throws DaoException {
         return false;
     }
 
@@ -251,7 +251,7 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     }
 
     @Override
-    public void addLoyaltyPoints(int idClient) throws DaoException {
+    public boolean addLoyaltyPoints(int idClient) throws DaoException {
         Connection connection = ConnectionPool.getInstance().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOYALTY_POINTS_BI_CLIENT_ID)) {
             statement.setInt(1, idClient);
@@ -262,7 +262,7 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
                     try (PreparedStatement statement1 = connection.prepareStatement(SqlQuery.UPDATE_LOYALTY_POINTS_BI_CLIENT_ID)) {
                         statement1.setInt(1, loyaltyPoints);
                         statement1.setInt(2, idClient);
-                        statement1.executeUpdate();
+                        return statement1.executeUpdate() > 0;
                     }
                 }
             }
@@ -270,6 +270,7 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
+        return false;
     }
 
     @Override

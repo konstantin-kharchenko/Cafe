@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static by.kharchenko.cafe.model.dao.SqlQuery.SELECT_USERS_BY_USERS_ID;
 
@@ -44,7 +43,7 @@ public class AdministratorDaoImpl implements BaseDao<Administrator>, Administrat
     }
 
     @Override
-    public boolean add(Map<String, String> userData) throws DaoException {
+    public boolean add(Administrator userData) throws DaoException {
         return false;
     }
 
@@ -54,7 +53,7 @@ public class AdministratorDaoImpl implements BaseDao<Administrator>, Administrat
     }
 
     @Override
-    public boolean update(Map<String, String> t) throws DaoException {
+    public boolean update(Administrator t) throws DaoException {
         return false;
     }
 

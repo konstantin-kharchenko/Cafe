@@ -78,7 +78,7 @@
 <c:import url="${abs}/view/jsp/header/user_header.jsp"/>
 <div class="body">
     <main class="form-signin text-center">
-        <form action="${abs}/controller">
+        <form method="post" action="${abs}/controller">
             <input type="hidden" id="hidRepeat" name="hidRepeat" value="${repeat}"/>
             <input type="hidden" id="hiddenPrice" name="hiddenPaymentType" value="${product.get("price")}"/>
             <input type="hidden" id="hiddenName" name="hiddenName" value="${product.get("name")}"/>

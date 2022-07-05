@@ -4,7 +4,6 @@ import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.dao.BaseDao;
 import by.kharchenko.cafe.model.dao.OrderDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
-import by.kharchenko.cafe.model.entity.Ingredient;
 import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.mapper.impl.OrderMapper;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
@@ -14,17 +13,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static by.kharchenko.cafe.controller.RequestParameter.*;
 import static by.kharchenko.cafe.model.dao.SqlQuery.INSERT_PRODUCTS_ID_BY_ORDER_ID;
 
-public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
+public class OrderDaoImpl implements BaseDao<Order>, OrderDao {
     private static final Logger logger = LogManager.getLogger(OrderDaoImpl.class);
     private static final OrderDaoImpl instance = new OrderDaoImpl();
 
@@ -36,7 +31,7 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
     }
 
     @Override
-    public boolean delete(Ingredient ingredient) throws DaoException {
+    public boolean delete(Order ingredient) throws DaoException {
         return false;
     }
 
@@ -75,54 +70,47 @@ public class OrderDaoImpl implements BaseDao<Ingredient>, OrderDao {
     }
 
     @Override
-    public boolean add(Map<String, String> orderData) throws DaoException {
+    public boolean add(Order orderData) throws DaoException {
         int result;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_ORDER)) {
-            java.util.Date utilDate = format.parse(orderData.get(DATE));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, orderData.get(NAME));
-            statement.setTimestamp(2, timeStamp);
-            statement.setInt(3, Integer.parseInt(orderData.get(ID_CLIENT)));
-            statement.setString(4, orderData.get(PAYMENT_TYPE));
+            statement.setString(1, orderData.getName());
+            statement.setDate(2, Date.valueOf(orderData.getDate()));
+            statement.setInt(3, orderData.getIdClient());
+            statement.setString(4, orderData.getPaymentType().toString().toLowerCase());
             result = statement.executeUpdate();
             if (result > 0) {
                 return true;
             } else {
                 throw new DaoException("failed to add in users table");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
 
     @Override
-    public List<Ingredient> findAll() throws DaoException {
+    public List<Order> findAll() throws DaoException {
         return null;
     }
 
     @Override
-    public boolean update(Map<String, String> orderData) throws DaoException {
-        Integer idOrder = Integer.parseInt(orderData.get(ID_ORDER));
+    public boolean update(Order orderData) throws DaoException {
         int result;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.UPDATE_ORDER)) {
-            java.util.Date utilDate = format.parse(orderData.get(DATE));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, orderData.get(NAME));
-            statement.setString(2, orderData.get(PAYMENT_TYPE));
-            statement.setTimestamp(3, timeStamp);
-            statement.setInt(4, idOrder);
+            statement.setString(1, orderData.getName());
+            statement.setString(2, orderData.getPaymentType().toString().toLowerCase());
+            statement.setDate(3, Date.valueOf(orderData.getDate()));
+            statement.setInt(4, orderData.getIdOrder());
             result = statement.executeUpdate();
             if (result > 0) {
                 return true;
             } else {
                 throw new DaoException("failed to add in users table");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }

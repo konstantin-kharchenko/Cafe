@@ -8,20 +8,21 @@ import java.util.Map;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
 
-public class DataValidatorImpl implements DataValidator {
+public class UserValidatorImpl implements DataValidator {
 
-    private static final DataValidatorImpl instance = new DataValidatorImpl();
+    private static final UserValidatorImpl instance = new UserValidatorImpl();
 
-    private DataValidatorImpl() {
+    private UserValidatorImpl() {
     }
 
-    public static DataValidatorImpl getInstance() {
+    public static UserValidatorImpl getInstance() {
         return instance;
     }
 
     private static final String DATE_REGEX = "^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2}$";
     private static final String LOGIN_REGEX = "^[A-Za-z0-9-_]{3,}$";
     private static final String UPPER_PASSWORD_REGEX = ".*[A-Z].*";
+    private static final String AGE_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}";
     private static final String LOWER_PASSWORD_REGEX = ".*[a-z].*";
     private static final String NAME_REGEX = "^[A-Z][a-z]+";
     private static final String SURNAME_REGEX = "^[A-Z](([a-z]{1,}(['-]*)[a-z]*)|(['-][a-z]+))";
@@ -33,16 +34,22 @@ public class DataValidatorImpl implements DataValidator {
     private static final String LOYALTY_POINTS_REGEX = "[0-9]{1,2}";
     private static final String EXPERIENCE_REGEX = "[0-9]{1,2}.[0-9]{1,2}";
     private static final String IS_BLOCK_REGEX = "(true)|(false)";
-    private static final String PHOTO_REGEX = "^.+(.jpg)|(.jpeg)|(.raw)|(.png)$";
+    private static final String PHOTO_REGEX = "^.+\\.(jpg|jpeg|raw|png)$";
 
 
     @Override
     public boolean isCorrectLogin(String login) {
+        if (login == null) {
+            return false;
+        }
         return login.matches(LOGIN_REGEX);
     }
 
     @Override
     public boolean isCorrectPassword(String password) {
+        if (password == null) {
+            return false;
+        }
         boolean a = password.matches(UPPER_PASSWORD_REGEX);
         boolean b = password.matches(LOWER_PASSWORD_REGEX);
         return a && b && password.matches(NUMBER_PASSWORD_REGEX);
@@ -50,64 +57,105 @@ public class DataValidatorImpl implements DataValidator {
 
     @Override
     public boolean isCorrectName(String name) {
+        if (name == null) {
+            return false;
+        }
         return name.matches(NAME_REGEX);
     }
 
     @Override
     public boolean isCorrectAge(String age) {
-        LocalDate localDate = LocalDate.parse(age);
-        LocalDate end = LocalDate.now();
-        long years = ChronoUnit.YEARS.between(localDate, end);
-        return years > 11;
+        if (age == null) {
+            return false;
+        }
+        if (age.matches(AGE_REGEX)) {
+            LocalDate localDate = LocalDate.parse(age);
+            LocalDate end = LocalDate.now();
+            long years = ChronoUnit.YEARS.between(localDate, end);
+            return years > 11;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
     public boolean isCorrectSurname(String surname) {
+        if (surname == null) {
+            return false;
+        }
         return surname.matches(SURNAME_REGEX);
     }
 
     @Override
-    public boolean isCorrectDate(String Date) {
-        return Date.matches(DATE_REGEX);
+    public boolean isCorrectDate(String date) {
+        if (date == null) {
+            return false;
+        }
+        return date.matches(DATE_REGEX);
     }
 
     @Override
     public boolean isCorrectEmail(String email) {
+        if (email == null) {
+            return false;
+        }
         return email.matches(EMAIL_REGEX);
     }
 
     @Override
     public boolean isCorrectIsBlock(String isBlock) {
+        if (isBlock == null) {
+            return false;
+        }
         return isBlock.matches(IS_BLOCK_REGEX);
     }
 
     @Override
     public boolean isCorrectLoyaltyPoints(String loyaltyPoints) {
+        if (loyaltyPoints == null) {
+            return false;
+        }
         return loyaltyPoints.matches(LOYALTY_POINTS_REGEX);
     }
 
     @Override
     public boolean isCorrectExperience(String experience) {
+        if (experience == null) {
+            return false;
+        }
         return experience.matches(EXPERIENCE_REGEX);
     }
 
     @Override
     public boolean isCorrectStatus(String status) {
+        if (status == null) {
+            return false;
+        }
         return status.matches(STATUS_REGEX);
     }
 
     @Override
     public boolean isCorrectPhone(String phone) {
+        if (phone == null) {
+            return false;
+        }
         return phone.matches(PHONE_REGEX);
     }
 
     @Override
     public boolean isCorrectUserRole(String userRole) {
+        if (userRole == null) {
+            return false;
+        }
         return userRole.toLowerCase().matches(ROLE_REGEX);
     }
 
     @Override
     public boolean isCorrectPhoto(String photo) {
+        if (photo == null) {
+            return false;
+        }
         return photo.matches(PHOTO_REGEX);
     }
 
