@@ -1,4 +1,4 @@
-package by.kharchenko.cafe.model.email;
+package by.kharchenko.cafe.util.email;
 
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;

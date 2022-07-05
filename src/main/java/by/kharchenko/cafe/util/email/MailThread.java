@@ -1,4 +1,4 @@
-package by.kharchenko.cafe.model.email;
+package by.kharchenko.cafe.util.email;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

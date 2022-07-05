@@ -11,6 +11,7 @@ import by.kharchenko.cafe.model.entity.Client;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.UserService;
+import by.kharchenko.cafe.util.email.impl.EmailSenderImpl;
 import by.kharchenko.cafe.util.encryption.EncryptionPassword;
 import by.kharchenko.cafe.util.filereadwrite.FileReaderWriter;
 import by.kharchenko.cafe.validator.DataValidator;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements BaseService<User>, UserService {
 
                     boolean match = userDao.add(user);
                     if (match) {
-                        EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT);
+                        EmailSenderImpl.getInstance().sendMail(userData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT);
                     }
                     return match;
                 } else {

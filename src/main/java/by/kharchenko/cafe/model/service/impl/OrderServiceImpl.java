@@ -10,6 +10,7 @@ import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.Product;
 import by.kharchenko.cafe.model.service.BaseService;
 import by.kharchenko.cafe.model.service.OrderService;
+import by.kharchenko.cafe.util.email.impl.EmailSenderImpl;
 import by.kharchenko.cafe.validator.OrderValidator;
 import by.kharchenko.cafe.validator.impl.OrderValidatorImpl;
 
@@ -66,7 +67,7 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
                     order.setPaymentType(paymentType);
                     boolean match = orderDao.add(order);
                     if (match) {
-                        EmailServiceImpl.getInstance().sendMail(orderData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT + orderData.get(NAME));
+                        EmailSenderImpl.getInstance().sendMail(orderData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT + orderData.get(NAME));
                     }
                     return match;
                 } else {
