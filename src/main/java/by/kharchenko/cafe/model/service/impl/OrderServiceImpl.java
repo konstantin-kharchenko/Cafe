@@ -14,6 +14,8 @@ import by.kharchenko.cafe.validator.OrderValidator;
 import by.kharchenko.cafe.validator.impl.OrderValidatorImpl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
@@ -55,7 +57,14 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
             if (isCorrectData) {
                 isNameExists = orderDao.findIdOrderByIdAndName(orderData.get(NAME), id).isPresent();
                 if (!isNameExists) {
-                    boolean match = orderDao.add(orderData);
+                    DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    Order.PaymentType paymentType = Order.PaymentType.valueOf(orderData.get(PAYMENT_TYPE).toUpperCase());
+                    Order order = new Order();
+                    order.setName(orderData.get(NAME));
+                    order.setDate(LocalDate.parse(orderData.get(DATE), parser));
+                    order.setIdClient(Integer.parseInt(orderData.get(ID_CLIENT)));
+                    order.setPaymentType(paymentType);
+                    boolean match = orderDao.add(order);
                     if (match) {
                         EmailServiceImpl.getInstance().sendMail(orderData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT + orderData.get(NAME));
                     }
@@ -96,7 +105,14 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
                 //todo name
                 isNameExists = orderDao.findIdOrderByIdAndNameAndNoIdOrder(orderData.get(NAME), idClient, idOrder).isPresent();
                 if (!isNameExists) {
-                    return orderDao.update(orderData);
+                    DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    Order.PaymentType paymentType = Order.PaymentType.valueOf(orderData.get(PAYMENT_TYPE).toLowerCase());
+                    Order order = new Order();
+                    order.setName(orderData.get(NAME));
+                    order.setDate(LocalDate.parse(orderData.get(DATE), parser));
+                    order.setIdOrder(Integer.parseInt(orderData.get(ID_ORDER)));
+                    order.setPaymentType(paymentType);
+                    return orderDao.update(order);
                 } else {
                     orderData.put(NAME, NAME_EXISTS);
                     return false;

@@ -4,7 +4,6 @@ import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.dao.BaseDao;
 import by.kharchenko.cafe.model.dao.ProductDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
-import by.kharchenko.cafe.model.entity.Ingredient;
 import by.kharchenko.cafe.model.entity.Order;
 import by.kharchenko.cafe.model.entity.Product;
 import by.kharchenko.cafe.model.mapper.impl.ProductMapper;
@@ -14,16 +13,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 
-import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestParameter.*;
-import static by.kharchenko.cafe.model.dao.SqlQuery.*;
+import static by.kharchenko.cafe.model.dao.SqlQuery.INSERT_INGREDIENTS_ID_BY_PRODUCT_ID;
+import static by.kharchenko.cafe.model.dao.SqlQuery.SELECT_PRODUCTS_BY_ID_PRODUCTS;
 
-public class ProductDaoImpl implements BaseDao<Ingredient>, ProductDao {
+public class ProductDaoImpl implements BaseDao<Product>, ProductDao {
     private static final Logger logger = LogManager.getLogger(ProductDaoImpl.class);
     private static final ProductDaoImpl instance = new ProductDaoImpl();
 
@@ -35,7 +33,7 @@ public class ProductDaoImpl implements BaseDao<Ingredient>, ProductDao {
     }
 
     @Override
-    public boolean delete(Ingredient ingredient) throws DaoException {
+    public boolean delete(Product ingredient) throws DaoException {
         return false;
     }
 
@@ -52,36 +50,33 @@ public class ProductDaoImpl implements BaseDao<Ingredient>, ProductDao {
     }
 
     @Override
-    public boolean add(Map<String, String> productData) throws DaoException {
+    public boolean add(Product productData) throws DaoException {
         int result;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_PRODUCT)) {
-            java.util.Date utilDate = format.parse(productData.get(DATE));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, productData.get(NAME));
-            statement.setTimestamp(2, timeStamp);
-            statement.setBigDecimal(3, new BigDecimal(productData.get(PRICE)));
+            statement.setString(1, productData.getName());
+            statement.setDate(2, Date.valueOf(productData.getDate()));
+            statement.setBigDecimal(3, productData.getPrice());
             result = statement.executeUpdate();
             if (result > 0) {
                 return true;
             } else {
                 throw new DaoException("failed to add in products table");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             throw new DaoException(e);
         }
     }
 
     @Override
-    public List<Ingredient> findAll() throws DaoException {
+    public List<Product> findAll() throws DaoException {
         return null;
     }
 
     @Override
-    public boolean update(Map<String, String> data) throws DaoException {
-        String photoName = data.get(PHOTO_NAME);
+    public boolean update(Product data) throws DaoException {
+        String photoName = data.getPhoto();
         String query;
         boolean isNewPhoto;
         if (photoName.equals("")) {
@@ -93,14 +88,14 @@ public class ProductDaoImpl implements BaseDao<Ingredient>, ProductDao {
         }
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, data.get(NAME));
-            statement.setString(2, data.get(DATE));
-            statement.setString(3, data.get(PRICE));
+            statement.setString(1, data.getName());
+            statement.setDate(2, Date.valueOf(data.getDate()));
+            statement.setBigDecimal(3, data.getPrice());
             if (isNewPhoto) {
-                statement.setString(4, data.get(PHOTO));
-                statement.setInt(5, Integer.parseInt(data.get(ID_PRODUCT)));
+                statement.setString(4, data.getPhoto());
+                statement.setInt(5, data.getIdProduct());
             } else {
-                statement.setInt(4, Integer.parseInt(data.get(ID_PRODUCT)));
+                statement.setInt(4, data.getIdProduct());
             }
             if (statement.executeUpdate() != 0) {
                 return true;

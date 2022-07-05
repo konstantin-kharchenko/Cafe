@@ -4,7 +4,6 @@ import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.entity.AbstractEntity;
 
 import java.util.List;
-import java.util.Map;
 
 public interface BaseDao<T extends AbstractEntity> {
 
@@ -12,10 +11,10 @@ public interface BaseDao<T extends AbstractEntity> {
 
     boolean delete(int id) throws DaoException;
 
-    boolean add(Map<String, String> userData) throws DaoException;
+    boolean add(T userData) throws DaoException;
 
     List<T> findAll() throws DaoException;
 
-    boolean update(Map<String, String> t) throws DaoException;
+    boolean update(T t) throws DaoException;
 
 }

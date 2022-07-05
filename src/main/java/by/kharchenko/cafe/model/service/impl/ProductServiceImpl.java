@@ -12,6 +12,9 @@ import by.kharchenko.cafe.util.filereadwrite.FileReaderWriter;
 import by.kharchenko.cafe.validator.ProductValidator;
 import by.kharchenko.cafe.validator.impl.ProductValidatorImpl;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.EMPTY;
@@ -52,10 +55,14 @@ public class ProductServiceImpl implements ProductService, BaseService<Product> 
         ProductDaoImpl productDao = ProductDaoImpl.getInstance();
         try {
             if (isCorrectData) {
-                //todo name
                 isNameExists = productDao.findIdProductByName(productData.get(NAME)).isPresent();
                 if (!isNameExists) {
-                    return productDao.add(productData);
+                    DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    Product product = new Product();
+                    product.setName(productData.get(NAME));
+                    product.setDate(LocalDate.parse(productData.get(DATE), parser));
+                    product.setPrice(new BigDecimal(productData.get(PRICE)));
+                    return productDao.add(product);
                 } else {
                     productData.put(NAME, NAME_EXISTS);
                     return false;
@@ -81,49 +88,50 @@ public class ProductServiceImpl implements ProductService, BaseService<Product> 
     }
 
     @Override
-    public boolean update(Map<String, String> data) throws ServiceException {
+    public boolean update(Map<String, String> productData) throws ServiceException {
         try {
             boolean isCorrectData;
-            isCorrectData = validator.isCorrectCreateData(data);
-            Integer idProduct = Integer.parseInt(data.get(ID_PRODUCT));
-            String name = data.get(NAME);
+            isCorrectData = validator.isCorrectCreateData(productData);
+            Integer idProduct = Integer.parseInt(productData.get(ID_PRODUCT));
+            String name = productData.get(NAME);
             Optional<Integer> idAnotherProduct;
-            String photoName = data.get(PHOTO_NAME);
+            String photoName = productData.get(PHOTO_NAME);
             boolean isCorrectPhoto = true;
             if (!photoName.equals("")) {
-                isCorrectPhoto = validator.isCorrectPhoto(data.get(PHOTO_NAME));
+                isCorrectPhoto = validator.isCorrectPhoto(productData.get(PHOTO_NAME));
             }
-            if (!data.get(NAME).equals("")) {
+            if (!productData.get(NAME).equals("")) {
                 idAnotherProduct = ProductDaoImpl.getInstance().findIdProductByNameAndNotId(name, idProduct);
                 if (idAnotherProduct.isPresent()) {
-                    data.put(NAME, NAME_EXISTS);
+                    productData.put(NAME, NAME_EXISTS);
                     if (!photoName.equals("") && !isCorrectPhoto) {
-                        data.put(PHOTO, "");
+                        productData.put(PHOTO, "");
                     } else if (photoName.equals("")) {
-                        data.put(PHOTO, EMPTY);
+                        productData.put(PHOTO, EMPTY);
                     }
                     return false;
                 }
             }
-            if (isCorrectData) {
-                if (isCorrectPhoto) {
-                    StringBuilder stringBuilder = new StringBuilder(PHOTO_PATH_ON_HDD);
-                    stringBuilder.append("\\").append(data.get(ID_PRODUCT)).append(FILE_EXTENSION);
-                    String path = stringBuilder.toString();
-                    if (!photoName.equals("")) {
-                        FileReaderWriter.getInstance().writePhoto(data.get(PHOTO), path);
-                    }
-                    data.put(PHOTO, path);
-                    return ProductDaoImpl.getInstance().update(data);
-                } else {
-                    if (photoName.equals("")) {
-                        data.put(PHOTO, EMPTY);
-                    }
-                    return false;
+            if (isCorrectData && isCorrectPhoto) {
+                StringBuilder stringBuilder = new StringBuilder(PHOTO_PATH_ON_HDD);
+                stringBuilder.append("\\").append(productData.get(ID_PRODUCT)).append(FILE_EXTENSION);
+                String path = stringBuilder.toString();
+                if (!photoName.equals("")) {
+                    FileReaderWriter.getInstance().writePhoto(productData.get(PHOTO), path);
                 }
+                productData.put(PHOTO, path);
+                DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                Product product = new Product();
+                product.setName(productData.get(NAME));
+                product.setDate(LocalDate.parse(productData.get(DATE), parser));
+                product.setPrice(new BigDecimal(productData.get(PRICE)));
+                product.setPhoto(path);
+                product.setIdProduct(Integer.parseInt(productData.get(ID_PRODUCT)));
+                return ProductDaoImpl.getInstance().update(product);
+
             } else {
                 if (photoName.equals("")) {
-                    data.put(PHOTO, EMPTY);
+                    productData.put(PHOTO, EMPTY);
                 }
                 return false;
             }

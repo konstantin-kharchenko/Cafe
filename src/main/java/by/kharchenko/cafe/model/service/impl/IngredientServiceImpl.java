@@ -9,6 +9,8 @@ import by.kharchenko.cafe.model.service.IngredientService;
 import by.kharchenko.cafe.validator.IngredientValidator;
 import by.kharchenko.cafe.validator.impl.IngredientValidatorImpl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +52,11 @@ public class IngredientServiceImpl implements BaseService<Ingredient>, Ingredien
             if (isCorrectData) {
                 isNameExists = ingredientDao.findIdIngredientByName(ingredientData.get(NAME)).isPresent();
                 if (!isNameExists) {
-                    return ingredientDao.add(ingredientData);
+                    DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setName(ingredientData.get(NAME));
+                    ingredient.setShelfLife(LocalDate.parse(ingredientData.get(SHELF_LIFE), parser));
+                    return ingredientDao.add(ingredient);
                 } else {
                     ingredientData.put(NAME, NAME_EXISTS);
                     return false;
@@ -91,7 +97,12 @@ public class IngredientServiceImpl implements BaseService<Ingredient>, Ingredien
                 }
             }
             if (isCorrectData) {
-                return IngredientDaoImpl.getInstance().update(data);
+                DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                Ingredient ingredient = new Ingredient();
+                ingredient.setName(data.get(NAME));
+                ingredient.setShelfLife(LocalDate.parse(data.get(SHELF_LIFE), parser));
+                ingredient.setIdIngredient(Integer.parseInt(data.get(ID_INGREDIENT)));
+                return IngredientDaoImpl.getInstance().update(ingredient);
             } else {
                 return false;
             }

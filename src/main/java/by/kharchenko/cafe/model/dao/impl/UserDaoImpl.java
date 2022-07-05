@@ -4,6 +4,7 @@ import by.kharchenko.cafe.exception.DaoException;
 import by.kharchenko.cafe.model.dao.BaseDao;
 import by.kharchenko.cafe.model.dao.SqlQuery;
 import by.kharchenko.cafe.model.dao.UserDao;
+import by.kharchenko.cafe.model.entity.Administrator;
 import by.kharchenko.cafe.model.entity.User;
 import by.kharchenko.cafe.model.pool.ConnectionPool;
 import org.apache.logging.log4j.Level;
@@ -12,14 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static by.kharchenko.cafe.controller.RequestParameter.*;
 
 public class UserDaoImpl implements UserDao, BaseDao<User> {
     private static final Logger logger = LogManager.getLogger(UserDaoImpl.class);
@@ -44,32 +40,27 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
     }
 
     @Override
-    public boolean add(Map<String, String> userData) throws DaoException {
+    public boolean add(User user) throws DaoException {
         int result;
-        long time = System.currentTimeMillis();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Timestamp timestamp = new Timestamp(time);
         Connection connection = ConnectionPool.getInstance().getConnection();
         try (
                 PreparedStatement statement = connection.prepareStatement(SqlQuery.ADD_USER, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
-            java.util.Date utilDate = format.parse(userData.get(BIRTHDAY));
-            Timestamp timeStamp = new Timestamp(utilDate.getTime());
-            statement.setString(1, userData.get(NAME));
-            statement.setString(2, userData.get(SURNAME));
-            statement.setString(3, userData.get(LOGIN));
-            statement.setString(4, userData.get(PASSWORD));
-            statement.setString(5, userData.get(EMAIL));
-            statement.setTimestamp(6, timeStamp);
-            statement.setTimestamp(7, timestamp);
-            statement.setString(8, userData.get(PHONE_NUMBER));
-            statement.setString(9, userData.get(ROLE));
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getSurname());
+            statement.setString(3, user.getLogin());
+            statement.setString(4, user.getPassword());
+            statement.setString(5, user.getEmail());
+            statement.setDate(6, Date.valueOf(user.getBirthday()));
+            statement.setDate(7, new java.sql.Date(user.getRegistrationTime().getTime()) );
+            statement.setString(8, user.getPhoneNumber());
+            statement.setString(9, user.getRole().toString().toLowerCase());
             result = statement.executeUpdate();
             if (result > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int idUser = generatedKeys.getInt(1);
-                        if (Objects.equals(userData.get(ROLE), User.Role.CLIENT.toString().toLowerCase())) {
+                        if (Objects.equals(user.getRole(), User.Role.CLIENT)) {
                             try (PreparedStatement clientStatement = connection.prepareStatement(SqlQuery.ADD_CLIENT)) {
                                 clientStatement.setInt(1, idUser);
                                 int clientResult = clientStatement.executeUpdate();
@@ -80,7 +71,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
                                     throw new DaoException("failed to add in clients table");
                                 }
                             }
-                        } else if (Objects.equals(userData.get(ROLE), User.Role.ADMINISTRATOR.toString().toLowerCase())) {
+                        } else if (Objects.equals(user.getRole(), User.Role.ADMINISTRATOR)) {
                             try (PreparedStatement administratorStatement = connection.prepareStatement(SqlQuery.ADD_ADMINISTRATOR)) {
                                 administratorStatement.setInt(1, idUser);
                                 int clientResult = administratorStatement.executeUpdate();
@@ -97,7 +88,7 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
             } else {
                 throw new DaoException("failed to add in users table");
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             logger.log(Level.ERROR, e);
             try {
                 connection.rollback();
@@ -121,11 +112,11 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
     }
 
     @Override
-    public boolean update(Map<String, String> userData) throws DaoException {
-        String photoName = userData.get(PHOTO_NAME);
+    public boolean update(User user) throws DaoException {
+        String photoPath = user.getPhotoPath();
         String query;
         boolean isNewPhoto;
-        if (photoName.equals("")) {
+        if (photoPath.equals("")) {
             query = SqlQuery.UPDATE_USER_WHERE_NOT_NEW_PHOTO_BY_USER_ID;
             isNewPhoto = false;
         } else {
@@ -135,21 +126,21 @@ public class UserDaoImpl implements UserDao, BaseDao<User> {
         Connection connection = ConnectionPool.getInstance().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             connection.setAutoCommit(false);
-            statement.setString(1, userData.get(NAME));
-            statement.setString(2, userData.get(SURNAME));
-            statement.setString(3, userData.get(LOGIN));
-            statement.setString(4, userData.get(PHONE_NUMBER));
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getSurname());
+            statement.setString(3, user.getLogin());
+            statement.setString(4, user.getPhoneNumber());
             if (isNewPhoto) {
-                statement.setString(5, userData.get(PHOTO));
-                statement.setInt(6, Integer.parseInt(userData.get(ID_USER)));
+                statement.setString(5, user.getPhotoPath());
+                statement.setInt(6, user.getIdUser());
             } else {
-                statement.setInt(5, Integer.parseInt(userData.get(ID_USER)));
+                statement.setInt(5, user.getIdUser());
             }
             if (statement.executeUpdate() != 0) {
-                if (userData.get(ROLE).equals(User.Role.ADMINISTRATOR.toString())) {
+                if (user.getRole().equals(User.Role.ADMINISTRATOR)) {
                     try (PreparedStatement updateAdmin = connection.prepareStatement(SqlQuery.UPDATE_ADMINISTRATOR_EXPERIENCE_BY_USER_ID)) {
-                        updateAdmin.setDouble(1, Double.parseDouble(userData.get(EXPERIENCE)));
-                        updateAdmin.setInt(2, Integer.parseInt(userData.get(ID_USER)));
+                        updateAdmin.setDouble(1, ((Administrator)user).getExperience());
+                        updateAdmin.setInt(2, user.getIdUser());
                         if (updateAdmin.executeUpdate() != 0) {
                             connection.commit();
                             return true;

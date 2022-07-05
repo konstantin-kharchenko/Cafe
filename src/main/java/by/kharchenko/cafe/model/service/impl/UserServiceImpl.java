@@ -14,13 +14,12 @@ import by.kharchenko.cafe.model.service.UserService;
 import by.kharchenko.cafe.util.encryption.EncryptionPassword;
 import by.kharchenko.cafe.util.filereadwrite.FileReaderWriter;
 import by.kharchenko.cafe.validator.DataValidator;
-import by.kharchenko.cafe.validator.impl.DataValidatorImpl;
+import by.kharchenko.cafe.validator.impl.UserValidatorImpl;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static by.kharchenko.cafe.controller.RequestAttribute.EMPTY;
 import static by.kharchenko.cafe.controller.RequestParameter.*;
@@ -31,7 +30,7 @@ public class UserServiceImpl implements BaseService<User>, UserService {
     private static final String MAIL_SUBJECT = "Registration message";
     private static final String MAIL_TEXT = "you have successfully registration in the 'Cafe' application ";
     private static final UserServiceImpl instance = new UserServiceImpl();
-    private final DataValidator validator = DataValidatorImpl.getInstance();
+    private final DataValidator validator = UserValidatorImpl.getInstance();
 
     private UserServiceImpl() {
     }
@@ -61,7 +60,19 @@ public class UserServiceImpl implements BaseService<User>, UserService {
                     String encryptionPassword = EncryptionPassword.encryption(userData.get(PASSWORD));
                     userData.put(PASSWORD, encryptionPassword);
                     UserDaoImpl userDao = UserDaoImpl.getInstance();
-                    boolean match = userDao.add(userData);
+                    DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    User user = new User();
+                    user.setName(userData.get(NAME));
+                    user.setSurname(userData.get(SURNAME));
+                    user.setLogin(userData.get(LOGIN));
+                    user.setPassword(encryptionPassword);
+                    user.setEmail(userData.get(EMAIL));
+                    user.setBirthday(LocalDate.parse(userData.get(BIRTHDAY), parser));
+                    user.setRegistrationTime(new Date());
+                    user.setPhoneNumber(userData.get(PHONE_NUMBER));
+                    user.setRole(User.Role.valueOf(userData.get(ROLE).toUpperCase()));
+
+                    boolean match = userDao.add(user);
                     if (match) {
                         EmailServiceImpl.getInstance().sendMail(userData.get(EMAIL), MAIL_SUBJECT, MAIL_TEXT);
                     }
@@ -119,27 +130,35 @@ public class UserServiceImpl implements BaseService<User>, UserService {
                     return false;
                 }
             }
-            if (isCorrectData) {
-                if (isCorrectPhoto) {
-                    StringBuilder stringBuilder = new StringBuilder(PHOTO_PATH_ON_HDD);
-                    if (userData.get(ROLE).equals(User.Role.CLIENT.toString())) {
-                        stringBuilder.append(User.Role.CLIENT);
-                    } else if (userData.get(ROLE).equals(User.Role.ADMINISTRATOR.toString())) {
-                        stringBuilder.append(User.Role.ADMINISTRATOR);
-                    }
-                    stringBuilder.append("\\").append(userData.get(ID_USER)).append(FILE_EXTENSION);
-                    String path = stringBuilder.toString();
-                    if (!photoName.equals("")) {
-                        FileReaderWriter.getInstance().writePhoto(userData.get(PHOTO), path);
-                    }
-                    userData.put(PHOTO, path);
-                    return UserDaoImpl.getInstance().update(userData);
+            if (isCorrectData && isCorrectPhoto) {
+                User user = null;
+                StringBuilder stringBuilder = new StringBuilder(PHOTO_PATH_ON_HDD);
+                if (userData.get(ROLE).equals(User.Role.CLIENT.toString())) {
+                    stringBuilder.append(User.Role.CLIENT);
+                    user = new Client();
+                } else if (userData.get(ROLE).equals(User.Role.ADMINISTRATOR.toString())) {
+                    stringBuilder.append(User.Role.ADMINISTRATOR);
+                    user = new Administrator();
+                    ((Administrator) user).setExperience(Double.parseDouble(userData.get(EXPERIENCE)));
+                }
+                stringBuilder.append("\\").append(userData.get(ID_USER)).append(FILE_EXTENSION);
+                String path = stringBuilder.toString();
+                if (!photoName.equals("")) {
+                    FileReaderWriter.getInstance().writePhoto(userData.get(PHOTO), path);
+                }
+                userData.put(PHOTO, path);
+                if (user != null) {
+                    user.setName(userData.get(NAME));
+                    user.setSurname(userData.get(SURNAME));
+                    user.setLogin(userData.get(LOGIN));
+                    user.setPhoneNumber(userData.get(PHONE_NUMBER));
+                    user.setPhotoPath(path);
+                    user.setIdUser(Integer.parseInt(userData.get(ID_USER)));
+                    return UserDaoImpl.getInstance().update(user);
                 } else {
-                    if (photoName.equals("")) {
-                        userData.put(PHOTO, EMPTY);
-                    }
                     return false;
                 }
+
             } else {
                 if (photoName.equals("")) {
                     userData.put(PHOTO, EMPTY);
