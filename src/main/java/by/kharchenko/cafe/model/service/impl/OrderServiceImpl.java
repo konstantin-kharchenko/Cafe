@@ -76,7 +76,7 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
                 }
             } else {
                 if (!Objects.equals(orderData.get(NAME), "")) {
-                    isNameExists = UserDaoImpl.getInstance().findIdUserByLogin(orderData.get(NAME)).isPresent();
+                    isNameExists =  orderDao.findIdOrderByIdAndName(orderData.get(NAME), id).isPresent();
                     if (isNameExists) {
                         orderData.put(NAME, NAME_EXISTS);
                     }
@@ -192,11 +192,13 @@ public class OrderServiceImpl implements BaseService<Order>, OrderService {
             Order.PaymentType paymentType = OrderDaoImpl.getInstance().paymentTypeByOrderId(idOrder);
             if (paymentType == Order.PaymentType.CLIENT_ACCOUNT) {
                 BigDecimal orderPrice = OrderDaoImpl.getInstance().priceByOrderId(idOrder);
+                BigDecimal loyaltyPoints = ClientDaoImpl.getInstance().loyaltyPointsByIdClient(idClient);
+                BigDecimal finalPrice = orderPrice.subtract(loyaltyPoints);
                 BigDecimal clientAccount = ClientDaoImpl.getInstance().clientAccountByIdClient(idClient);
-                if (clientAccount.compareTo(orderPrice) < 0) {
+                if (clientAccount.compareTo(finalPrice) < 0) {
                     return false;
                 }
-                ClientDaoImpl.getInstance().subPriceFromClientAccount(orderPrice, idClient);
+                ClientDaoImpl.getInstance().subPriceFromClientAccount(orderPrice,loyaltyPoints, idClient);
             }
             OrderDaoImpl.getInstance().delete(idOrder);
             ClientDaoImpl.getInstance().addLoyaltyPoints(idClient);

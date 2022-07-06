@@ -99,6 +99,8 @@ public final class SqlQuery {
     public static final String SELECT_CLIENT_BY_CLIENTS_ID = "SELECT id_client, is_block, loyalty_points, id_user, client_account " +
             "FROM clients WHERE id_client = ?";
     public static final String SELECT_CLIENT_ACCOUNT_BY_CLIENT_ID = "SELECT client_account FROM clients WHERE id_client = ?";
+    public static final String SELECT_LOYALTY_POINTS_BY_CLIENT_ID = "SELECT loyalty_points FROM clients WHERE id_client = ?";
+    public static final String UPDATE_LOYALTY_POINTS_BY_CLIENT_ID = "UPDATE clients SET loyalty_points = ? WHERE id_client = ?";
     public static final String SELECT_PRICE_BY_ORDER_ID = "SELECT price FROM orders WHERE id_order = ?";
     public static final String SELECT_PAYMENT_TYPE_BY_ORDER_ID = "SELECT payment_type FROM orders WHERE id_order = ?";
     public static final String UPDATE_CLIENT_ACCOUNT_BY_CLIENT_ID = "UPDATE clients SET client_account = ? WHERE id_client = ?";

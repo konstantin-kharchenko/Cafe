@@ -274,6 +274,19 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     }
 
     @Override
+    public boolean updateLoyaltyPoints(int idClient, BigDecimal loyaltyPoints) throws DaoException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_LOYALTY_POINTS_BY_CLIENT_ID)) {
+            statement.setBigDecimal(1, loyaltyPoints);
+            statement.setInt(2, idClient);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
     public void subLoyaltyPoints(int idClient) throws DaoException {
         Connection connection = ConnectionPool.getInstance().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(SqlQuery.SELECT_LOYALTY_POINTS_BI_CLIENT_ID)) {
@@ -371,19 +384,62 @@ public class ClientDaoImpl implements BaseDao<Client>, ClientDao {
     }
 
     @Override
-    public void subPriceFromClientAccount(BigDecimal orderPrice, int idClient) throws DaoException {
+    public void subPriceFromClientAccount(BigDecimal orderPrice, BigDecimal loyaltyPoints, int idClient) throws DaoException {
+        BigDecimal finalPrice = orderPrice.subtract(loyaltyPoints);
+        if (finalPrice.compareTo(BigDecimal.ONE) <= 0) {
+            BigDecimal newLoyaltyPoints = loyaltyPoints.subtract(orderPrice);
+            updateLoyaltyPoints(idClient, newLoyaltyPoints);
+        }
+        else {
+            Connection connection = ConnectionPool.getInstance().getConnection();
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_CLIENT_ACCOUNT_BY_CLIENT_ID)) {
+                connection.setAutoCommit(false);
+                statement.setInt(1, idClient);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        BigDecimal clientAccount = resultSet.getBigDecimal(1);
+                        BigDecimal result = clientAccount.subtract(finalPrice);
+                        try (PreparedStatement statement1 = connection.prepareStatement(UPDATE_CLIENT_ACCOUNT_BY_CLIENT_ID)) {
+                            statement1.setBigDecimal(1, result);
+                            statement1.setInt(2, idClient);
+                            statement1.executeUpdate();
+                            try(PreparedStatement statement2 = connection.prepareStatement(UPDATE_LOYALTY_POINTS_BY_CLIENT_ID)) {
+                                statement2.setBigDecimal(1, new BigDecimal("0"));
+                                statement2.setInt(2, idClient);
+                                statement2.executeUpdate();
+                                connection.commit();
+                            }
+                        }
+                    } else {
+                        throw new DaoException("no client account");
+                    }
+                }
+            } catch (SQLException e) {
+                logger.log(Level.ERROR, e);
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    logger.log(Level.ERROR, e);
+                }
+                throw new DaoException(e);
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    logger.log(Level.ERROR, e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public BigDecimal loyaltyPointsByIdClient(int idClient) throws DaoException {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_CLIENT_ACCOUNT_BY_CLIENT_ID)) {
+             PreparedStatement statement = connection.prepareStatement(SELECT_LOYALTY_POINTS_BY_CLIENT_ID)) {
             statement.setInt(1, idClient);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    BigDecimal clientAccount = resultSet.getBigDecimal(1);
-                    BigDecimal result = clientAccount.subtract(orderPrice);
-                    try (PreparedStatement statement1 = connection.prepareStatement(UPDATE_CLIENT_ACCOUNT_BY_CLIENT_ID)) {
-                        statement1.setBigDecimal(1, result);
-                        statement1.setInt(2, idClient);
-                        statement1.executeUpdate();
-                    }
+                    return resultSet.getBigDecimal(1);
                 } else {
                     throw new DaoException("no client account");
                 }

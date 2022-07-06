@@ -21,11 +21,15 @@ public interface ClientDao {
 
     boolean addLoyaltyPoints(int idClient) throws DaoException;
 
+    boolean updateLoyaltyPoints(int idClient, BigDecimal loyaltyPoints) throws DaoException;
+
     void subLoyaltyPoints(int idClient) throws DaoException;
 
     Client findClientWithOverdueOrders(int idClient) throws DaoException;
 
     BigDecimal clientAccountByIdClient(int idClient) throws DaoException;
 
-    void subPriceFromClientAccount(BigDecimal orderPrice, int idClient) throws DaoException;
+    void subPriceFromClientAccount(BigDecimal orderPrice, BigDecimal loyaltyPoints, int idClient) throws DaoException;
+
+    BigDecimal loyaltyPointsByIdClient(int idClient) throws DaoException;
 }

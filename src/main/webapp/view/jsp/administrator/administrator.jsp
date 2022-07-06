@@ -157,7 +157,7 @@
                     <aside>
                         <div class="list-group">
                             <c:forEach var="client" items="${today_clients}">
-                                <a href="${abs}/controller?command=go_order_page&id_order=${client.idClient}"
+                                <a href="${abs}/controller?command=find_client&id_client=${client.idClient}&id_user=${client.idUser}"
                                    class="list-group-item list-group-item-action flex-column align-items-start btn btn-outline-primary">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1"><c:out value="${client.login}"/></h5>
