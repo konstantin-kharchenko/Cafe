@@ -51,13 +51,14 @@ public class ProductValidatorImpl implements ProductValidator {
 
     @Override
     public boolean isCorrectDate(String date) {
-        if (date == null) {
-            return false;
-        }
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date date1 = format.parse(date);
             Date date2 = new Date();
+            String stringDate = format.format(date2);
+            if (stringDate.equals(date)){
+                return true;
+            }
             int compare = date2.compareTo(date1);
             return compare <= 0;
         } catch (ParseException e) {
