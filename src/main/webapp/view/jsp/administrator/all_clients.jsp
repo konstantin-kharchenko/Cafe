@@ -3,6 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="abs">${pageContext.request.contextPath}</c:set>
 <html>
+<fmt:setLocale value="${language}"/>
+<fmt:setBundle basename="localization.pagecontent" var="lang"/>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
