@@ -23,11 +23,17 @@ public class IngredientValidatorImpl implements IngredientValidator {
 
     @Override
     public boolean isCorrectIngredientName(String ingredientName) {
+        if (ingredientName == null) {
+            return false;
+        }
         return ingredientName.matches(NAME_REGEX);
     }
 
     @Override
     public boolean isCorrectDate(String date) {
+        if (date == null) {
+            return false;
+        }
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date date1 = format.parse(date);

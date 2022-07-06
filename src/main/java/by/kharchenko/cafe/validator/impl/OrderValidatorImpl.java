@@ -26,11 +26,17 @@ public class OrderValidatorImpl implements OrderValidator {
 
     @Override
     public boolean isCorrectPaymentType(String paymentType) {
+        if (paymentType == null) {
+            return false;
+        }
         return paymentType.matches(PAYMENT_TYPE_REGEX);
     }
 
     @Override
     public boolean isCorrectOrderName(String orderName) {
+        if (orderName == null) {
+            return false;
+        }
         return orderName.matches(NAME_REGEX);
     }
 
