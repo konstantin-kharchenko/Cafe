@@ -8,7 +8,7 @@ loyalty is removed up to its blocking. The client can evaluate
 every order and leave feedback. The administrator manages the menu,
 sets/removes bans/bonuses/points for Clients.
 
-- The client can:
+### + The client can:
 + create an order,
 2 delete order,
 3 edit order,
