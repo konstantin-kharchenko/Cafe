@@ -49,3 +49,6 @@ Due to the fact that accessing the database is a very long and resource-intensiv
 After the Connection is received, a SQL request is made to our database. The result is returned and placed in the Mapper.
 Mapper extracts data from the received result, creates this or that Entity and fills it with data.
 After that, the Entity returns to the Service, the Service returns the Entity to the command, and there the Entities are put in the request and the request is sent to the client.
+
+Below is the schema of the tables in my database.
+![image](https://user-images.githubusercontent.com/51529773/192054306-b34fb363-b2f0-4201-a3c6-f02c97156387.png)
