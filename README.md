@@ -9,7 +9,7 @@ every order and leave feedback. The administrator manages the menu,
 sets/removes bans/bonuses/points for Clients.
 
 - The client can:
-1 create an order,
++ create an order,
 2 delete order,
 3 edit order,
 4 add products from the shopping cart to the order,
