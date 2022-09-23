@@ -38,3 +38,7 @@ sets/removes bans/bonuses/points for Clients.
 
 
 This project was created in order to demonstrate the interaction of the client and the server, the creation of a connection pool, mappers, the operation of the MVC application, knowledge and understanding of different levels of the application, such as: Controllers, Services, DAO.
+
+
+![image](https://user-images.githubusercontent.com/51529773/192051361-48446ca7-00f9-4e46-bd81-562acecb2b62.png)
+)
