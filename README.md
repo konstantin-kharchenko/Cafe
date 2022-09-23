@@ -35,3 +35,6 @@ sets/removes bans/bonuses/points for Clients.
 + confirm customer orders,
 + do not confirm customer orders,
 + release client.
+
+
+This project was created in order to demonstrate the interaction of the client and the server, the creation of a connection pool, mappers, the operation of the MVC application, knowledge and understanding of different levels of the application, such as: Controllers, Services, DAO.
