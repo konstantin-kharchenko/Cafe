@@ -1,4 +1,4 @@
-#h1Cafe. 
+# Cafe. 
 The client makes an Order for lunch (chooses from the menu) and indicates the time
 when he would like to receive an order. The system shows the price of the Order and
 offers to pay from a client account or in cash upon receipt
