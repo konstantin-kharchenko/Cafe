@@ -8,30 +8,30 @@ loyalty is removed up to its blocking. The client can evaluate
 every order and leave feedback. The administrator manages the menu,
 sets/removes bans/bonuses/points for Clients.
 
-### + The client can:
+### The client can:
 + create an order,
-2 delete order,
-3 edit order,
-4 add products from the shopping cart to the order,
-5 remove products from an order,
-6 remove products from cart,
-7 add products to cart,
-8 change profile,
-9 change language.
++ delete order,
++ edit order,
++ add products from the shopping cart to the order,
++ remove products from an order,
++ remove products from cart,
++ add products to cart,
++ change profile,
++ change language.
 
-Administrator can:
-create an ingredient,
-edit ingredient,
-remove an ingredient,
-create a product,
-delete a product,
-change the product,
-add ingredients from the basket to the product,
-remove ingredients from a product,
-add game items to cart,
-remove ingredients from cart,
-approve requests from new administrators,
-change language,
-confirm customer orders,
-do not confirm customer orders,
-release client.
+### Administrator can:
++ create an ingredient,
++ edit ingredient,
++ remove an ingredient,
++ create a product,
++ delete a product,
++ change the product,
++ add ingredients from the basket to the product,
++ remove ingredients from a product,
++ add game items to cart,
++ remove ingredients from cart,
++ approve requests from new administrators,
++ change language,
++ confirm customer orders,
++ do not confirm customer orders,
++ release client.
