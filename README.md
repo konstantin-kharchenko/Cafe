@@ -41,4 +41,11 @@ This project was created in order to demonstrate the interaction of the client a
 
 
 ![image](https://user-images.githubusercontent.com/51529773/192051361-48446ca7-00f9-4e46-bd81-562acecb2b62.png)
-)
+
+This diagram shows in detail how the application process works, starting from the client and ending with the database.
+From the very beginning, an HTTP request is made on the client side, after which, thanks to the servlet, it is caught and placed in the controller, which calls a certain command, depending on what the client asked us to do. This command calls the services that contain the main application logic, after which the services call different DAO and the database is accessed already in the DAO.
+How it works? First, each method of the DAO class receives a Connection from the Connection Pool in order to access the database.
+Due to the fact that accessing the database is a very long and resource-intensive process, a connection pool is needed. It already contains several connections that are in the queue for use by DAO methods of objects. The connection pool is created at the beginning of the application startup.
+After the Connection is received, a SQL request is made to our database. The result is returned and placed in the Mapper.
+Mapper extracts data from the received result, creates this or that Entity and fills it with data.
+After that, the Entity returns to the Service, the Service returns the Entity to the command, and there the Entities are put in the request and the request is sent to the client.
