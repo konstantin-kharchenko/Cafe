@@ -61,3 +61,5 @@ After that, the Entity returns to the Service, the Service returns the Entity to
 + Mail Sender
 + Localization
 + Password encoding
++ MySQL
++ Bootstrap
